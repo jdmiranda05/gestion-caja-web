@@ -61,5 +61,50 @@
     </section>
 </main>
 <script src="/app.js"></script>
+<!-- MODAL DE BOLETA DE VENTA -->
+<div id="receiptModalBackdrop" class="modal-backdrop" style="display: none;">
+    <div class="ticket-container">
+        <div class="ticket-header">
+            <h3>BODEGA Y GESTIÓN DE CAJA</h3>
+            <p>R.U.C. 10458796541</p>
+            <p>Av. España 1234 - Trujillo</p>
+            <h4>BOLETA DE VENTA ELECTRÓNICA</h4>
+            <p><strong>N°: </strong><span id="ticketNumber"></span></p>
+            <p><strong>Fecha: </strong><span id="ticketDate"></span></p>
+        </div>
+        <hr class="dashed-line"/>
+        <table class="ticket-table">
+            <thead>
+                <tr>
+                    <th>Cant.</th>
+                    <th>Descripción</th>
+                    <th>P.Unit</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="ticketQty"></td>
+                    <td id="ticketProduct"></td>
+                    <td id="ticketUnitPrice"></td>
+                    <td id="ticketItemTotal"></td>
+                </tr>
+            </tbody>
+        </table>
+        <hr class="dashed-line"/>
+        <div class="ticket-total">
+            <p><strong>OP. GRAVADA:</strong> S/. <span id="ticketSubtotal"></span></p>
+            <p><strong>I.G.V. (18%):</strong> S/. <span id="ticketIgv"></span></p>
+            <h3><strong>TOTAL: S/. <span id="ticketTotal"></span></strong></h3>
+        </div>
+        <div class="ticket-footer">
+            <p>¡Gracias por su compra!</p>
+        </div>
+        <div class="ticket-actions no-print">
+            <button type="button" class="btn-primary" onclick="printReceiptTicket()">Imprimir / Guardar PDF</button>
+            <button type="button" class="btn-secondary" onclick="closeReceiptModal()">Cerrar</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
