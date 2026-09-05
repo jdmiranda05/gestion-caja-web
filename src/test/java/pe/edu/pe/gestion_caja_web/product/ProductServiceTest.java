@@ -66,4 +66,14 @@ class ProductServiceTest {
         assertThat(result.getStock()).isEqualTo(20);
         verify(productRepository).save(eq(product));
     }
+    @Test
+    void logicallyDeletesAnExistingProduct() {
+        Product product = new Product("Cafe", "Abarrotes", new BigDecimal("6.50"), 12);
+        when(productRepository.findById(7L)).thenReturn(java.util.Optional.of(product));
+
+        new ProductService(productRepository).delete(7L);
+
+        assertThat(product.getActive()).isFalse();
+        verify(productRepository).save(product);
+    }
 }
