@@ -35,4 +35,10 @@ class ProductControllerTest {
         assertThat(new ProductController(productService).create(request)).isSameAs(product);
         verify(productService).create(request);
     }
+    @Test
+    void delegatesProductDeletion() {
+        new ProductController(productService).delete(7L);
+
+        verify(productService).delete(7L);
+    }
 }

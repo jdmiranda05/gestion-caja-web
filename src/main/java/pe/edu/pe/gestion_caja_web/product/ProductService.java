@@ -34,6 +34,12 @@ public class ProductService {
         product.setStock(request.stock());
         return productRepository.save(product);
     }
+    public void delete(Long id) {
+        Product product = getById(id);
+        product.setActive(false);
+        productRepository.save(product);
+    }
+
 
     public Product getById(Long id) {
         return productRepository.findById(id)
