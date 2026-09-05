@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bodega - Caja e inventario</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="topbar">
+    <div>
+        <p class="eyebrow">AVANCE DE BODEGA</p>
+        <h1>Mi bodega</h1>
+        <p class="subtitle">Inventario claro, ventas simples y productos al alcance de tus clientes.</p>
+    </div>
+    <div class="status"><span></span> Sistema activo</div>
+</header>
+
+<main class="layout">
+    <section class="hero-panel">
+        <div>
+            <p class="eyebrow">CONTROL DIARIO</p>
+            <h2>Todo lo importante de tu mostrador, en un solo lugar.</h2>
+            <p>Revisa qué tienes, registra una venta y mantén actualizado el almacén sin perder tiempo.</p>
+        </div>
+        <div class="hero-mark">B<br><small>odega</small></div>
+    </section>
+
+    <section class="metrics" aria-label="Resumen">
+        <article><span>Productos</span><strong id="product-count">0</strong></article>
+        <article><span>Unidades en almacén</span><strong id="stock-count">0</strong></article>
+        <article><span>Ventas recientes</span><strong id="sale-count">0</strong></article>
+    </section>
+
+    <div class="content-grid">
+        <section class="panel">
+            <div class="panel-heading">
+                <div><p class="eyebrow">CATÁLOGO</p><h2>Productos disponibles</h2></div>
+                <button class="button secondary" id="refresh-button">Actualizar</button>
+            </div>
+            <div id="products" class="product-list"></div>
+        </section>
+
+        <section class="panel sale-panel">
+            <p class="eyebrow">PUNTO DE VENTA</p>
+            <h2>Registrar venta</h2>
+            <form id="sale-form">
+                <label>Producto<select id="sale-product" required></select></label>
+                <label>Cantidad<input id="sale-quantity" type="number" min="1" value="1" required></label>
+                <label>Cliente <span class="optional">opcional</span><input id="customer-name" type="text" placeholder="Nombre del cliente"></label>
+                <div class="total-line"><span>Total</span><strong id="sale-total">S/ 0.00</strong></div>
+                <button class="button primary" type="submit">Cobrar venta</button>
+            </form>
+            <p id="sale-message" class="message" role="status"></p>
+        </section>
+    </div>
+
+    <section class="panel public-panel">
+        <div class="panel-heading"><div><p class="eyebrow">VISTA CLIENTE</p><h2>Productos que pueden consultar</h2></div></div>
+        <div id="public-products" class="public-list"></div>
+    </section>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>

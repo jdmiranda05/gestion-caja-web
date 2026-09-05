@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap');
+
+:root { --ink:#172321; --muted:#687975; --paper:#f4f7f2; --panel:#fff; --green:#0f766e; --lime:#d8edb8; --line:#dfe8e1; --orange:#ef8354; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--paper); color:var(--ink); font-family:'DM Sans', sans-serif; }
+.topbar { display:flex; justify-content:space-between; gap:24px; align-items:flex-start; padding:42px max(24px, calc((100% - 1180px) / 2)); background:#173d38; color:#f4f7f2; }
+h1,h2 { font-family:'Space Grotesk', sans-serif; margin:0; letter-spacing:0; }
+h1 { font-size:clamp(2.4rem, 6vw, 5rem); line-height:.95; }
+h2 { font-size:1.35rem; }
+.subtitle { max-width:530px; color:#b9d1c8; margin:16px 0 0; font-size:1.05rem; }
+.eyebrow { margin:0 0 10px; font-size:.72rem; letter-spacing:.14em; font-weight:700; color:#f5a07c; }
+.status { white-space:nowrap; border:1px solid #6d9c8d; border-radius:999px; padding:10px 14px; color:#d7eee5; font-size:.85rem; }
+.status span { display:inline-block; width:8px; height:8px; margin-right:7px; border-radius:50%; background:#9bd469; }
+.layout { max-width:1180px; margin:0 auto; padding:30px 24px 60px; }
+.hero-panel { display:flex; justify-content:space-between; align-items:center; gap:24px; background:var(--lime); padding:34px 38px; border-radius:10px; overflow:hidden; }
+.hero-panel h2 { max-width:620px; font-size:clamp(1.7rem, 3vw, 2.8rem); line-height:1.05; }
+.hero-panel p:not(.eyebrow) { max-width:620px; color:#49645b; line-height:1.55; }
+.hero-mark { flex:0 0 130px; height:130px; border-radius:50%; display:grid; place-content:center; text-align:center; background:var(--orange); color:white; font:700 4.5rem/.68 'Space Grotesk'; transform:rotate(8deg); }
+.hero-mark small { font:500 .82rem 'DM Sans'; }
+.metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:18px 0; }
+.metrics article { background:var(--panel); border:1px solid var(--line); padding:20px; border-radius:8px; }
+.metrics span { color:var(--muted); font-size:.84rem; }.metrics strong { display:block; margin-top:6px; font:700 2.1rem 'Space Grotesk'; }
+.content-grid { display:grid; grid-template-columns:1.45fr .8fr; gap:18px; }
+.panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:24px; }.panel-heading { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:20px; }
+.button { border:0; border-radius:6px; padding:11px 15px; font:700 .85rem 'DM Sans'; cursor:pointer; }.primary { background:var(--green); color:#fff; width:100%; }.secondary { color:var(--green); background:#e7f0e9; }
+.product-list { display:grid; gap:10px; }.product { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; padding:14px; border:1px solid var(--line); border-radius:7px; }.product h3 { margin:0 0 3px; font-size:1rem; }.product p { margin:0; color:var(--muted); font-size:.82rem; }.price { text-align:right; font-weight:700; color:var(--green); }.stock { display:block; color:var(--muted); font-size:.75rem; font-weight:400; margin-top:4px; }
+label { display:block; margin:16px 0; font-size:.85rem; font-weight:700; } input,select { display:block; width:100%; margin-top:7px; border:1px solid #cad8ce; border-radius:6px; padding:12px; background:white; color:var(--ink); font:inherit; } .optional { font-weight:400; color:var(--muted); }.total-line { display:flex; justify-content:space-between; align-items:center; padding:18px 0; margin-top:8px; border-top:1px solid var(--line); font-weight:700; }.total-line strong { font:700 1.5rem 'Space Grotesk'; color:var(--orange); }.message { min-height:20px; font-size:.85rem; color:var(--green); }.message.error { color:#bd4b37; }
+.public-panel { margin-top:18px; }.public-list { display:flex; flex-wrap:wrap; gap:10px; }.public-product { padding:12px 15px; background:#f1f6ee; border-radius:6px; min-width:170px; }.public-product strong { display:block; }.public-product span { color:var(--green); font-size:.85rem; }
+@media (max-width:760px) { .topbar { display:block; padding:30px 20px; }.status { display:inline-block; margin-top:22px; }.layout { padding:20px 14px 40px; }.hero-panel { padding:25px; }.hero-mark { flex-basis:90px; height:90px; font-size:3rem; }.content-grid { grid-template-columns:1fr; }.metrics { gap:8px; }.metrics article { padding:14px 10px; }.metrics strong { font-size:1.55rem; } }
