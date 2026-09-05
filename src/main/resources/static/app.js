@@ -56,12 +56,60 @@ document.querySelector('#sale-form').addEventListener('submit', async event => {
         saleMessageElement.textContent = error.detail || error.message || 'No se pudo registrar la venta.';
         return;
     }
+    const data = await response.json();
     saleMessageElement.textContent = 'Venta registrada y stock actualizado.';
     event.target.reset();
     await Promise.all([loadProducts(), loadSales()]);
+    showReceipt(data.id);
 });
 
 saleProductElement.addEventListener('change', updateTotal);
 saleQuantityElement.addEventListener('input', updateTotal);
 document.querySelector('#refresh-button').addEventListener('click', () => Promise.all([loadProducts(), loadSales()]));
 loadProducts().then(loadSales);
+
+// ==========================================
+// FUNCIONES PARA LA BOLETA DE VENTA
+// ==========================================
+
+async function showReceipt(saleId) {
+    try {
+        const response = await fetch('/api/sales/' + saleId + '/receipt');
+        if (!response.ok) {
+            alert('No se pudo obtener la boleta de venta.');
+            return;
+        }
+        const receipt = await response.json();
+
+        // Rellenar datos en el ticket
+        document.getElementById('ticketNumber').innerText = receipt.receiptNumber;
+        document.getElementById('ticketDate').innerText = new Date(receipt.issueDate).toLocaleString();
+        document.getElementById('ticketQty').innerText = receipt.quantity;
+        document.getElementById('ticketProduct').innerText = receipt.productName;
+        document.getElementById('ticketUnitPrice').innerText = 'S/. ' + Number(receipt.unitPrice).toFixed(2);
+        document.getElementById('ticketItemTotal').innerText = 'S/. ' + Number(receipt.total).toFixed(2);
+
+        // Calculos de IGV y Subtotal (18%)
+        const total = Number(receipt.total);
+        const subtotal = total / 1.18;
+        const igv = total - subtotal;
+
+        document.getElementById('ticketSubtotal').innerText = subtotal.toFixed(2);
+        document.getElementById('ticketIgv').innerText = igv.toFixed(2);
+        document.getElementById('ticketTotal').innerText = total.toFixed(2);
+
+        // Mostrar el modal
+        document.getElementById('receiptModalBackdrop').style.display = 'flex';
+    } catch (error) {
+        console.error('Error al cargar la boleta:', error);
+        alert('Ocurrio un error al cargar la boleta.');
+    }
+}
+
+function closeReceiptModal() {
+    document.getElementById('receiptModalBackdrop').style.display = 'none';
+}
+
+function printReceiptTicket() {
+    window.print();
+}
