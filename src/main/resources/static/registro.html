@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>Crear cuenta | Tienda Alondralu</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="account-page">
+<header class="topbar account-topbar">
+    <div class="brand-area">
+        <p class="eyebrow">GESTIÓN DE BODEGA</p>
+        <h1>Tienda Alondralu</h1>
+        <p class="subtitle">Crea tu cuenta para realizar y consultar tus compras.</p>
+    </div>
+    <div class="account-actions">
+        <button class="button theme-toggle" type="button"
+                data-theme-toggle aria-label="Cambiar tema">
+            Cambiar tema
+        </button>
+        <a class="button topbar-login" href="/">Volver a la tienda</a>
+    </div>
+</header>
+
+<main class="account-layout">
+    <section class="account-card">
+        <p class="eyebrow">ÚNETE A LA TIENDA</p>
+        <h2>Crear una cuenta</h2>
+        <p class="muted-text">
+            Completa tus datos. Tu cuenta se creará con el rol de cliente.
+        </p>
+
+        <form id="register-form" class="account-form">
+            <label for="register-username">Nombre de usuario
+                <input id="register-username" name="username" type="text"
+                       minlength="3" maxlength="50"
+                       autocomplete="username" required
+                       placeholder="Ej. usuario123">
+            </label>
+
+            <label for="register-email">Correo electrónico
+                <input id="register-email" name="email" type="email"
+                       maxlength="150" autocomplete="email" required
+                       placeholder="nombre@correo.com">
+            </label>
+
+            <label for="register-password">Contraseña
+                <input id="register-password" name="password" type="password"
+                       minlength="8" autocomplete="new-password" required
+                       placeholder="Mínimo 8 caracteres">
+            </label>
+
+            <button id="register-submit" class="button primary" type="submit">
+                Crear cuenta
+            </button>
+
+            <p id="register-message" class="message" role="status"
+               aria-live="polite"></p>
+        </form>
+
+        <p class="account-note">
+            ¿Ya tienes una cuenta?
+            <a href="/login">Inicia sesión</a>
+        </p>
+    </section>
+</main>
+
+<script src="/theme.js"></script>
+<script src="/account.js"></script>
+</body>
+</html>

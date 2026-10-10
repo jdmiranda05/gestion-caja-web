@@ -1,19 +1,49 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bodega - Caja e inventario</title>
+    <title>Tienda Alondralu - Caja e inventario</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
 <header class="topbar">
-    <div>
-        <p class="eyebrow">AVANCE DE BODEGA</p>
+    <div class="brand-area">
+        <p class="eyebrow">GESTIÓN DE BODEGA</p>
         <h1>Tienda Alondralu</h1>
-        <p class="subtitle">Inventario claro, ventas simples y productos al alcance de tus clientes.</p>
+        <p class="subtitle">
+            Inventario claro, ventas simples y productos al alcance de tus clientes.
+        </p>
     </div>
-    <div class="status"><span></span> Sistema activo</div>
+
+    <!-- Acciones y estado de la sesión actual. -->
+    <div class="account-area">
+        <a id="login-link" class="button topbar-login" href="/login" hidden>
+            Iniciar sesión
+        </a>
+
+        <a id="register-link" class="button topbar-login"
+            href="/registro" hidden>
+            Crear cuenta
+        </a>
+
+        <button class="button theme-toggle" type="button" data-theme-toggle>
+            Cambiar tema
+        </button>
+
+        <div id="session-info" class="session-info topbar-session" aria-live="polite">
+            <p id="session-message" class="session-message">
+                Comprobando tu sesión...
+            </p>
+            <button id="logout-button" class="button logout-button"
+                    type="button" hidden>
+                Cerrar sesión
+            </button>
+        </div>
+
+        <div class="status"><span></span> Sistema activo</div>
+    </div>
 </header>
 
 <main class="layout">
@@ -21,58 +51,196 @@
         <div>
             <p class="eyebrow">CONTROL DIARIO</p>
             <h2>Todo lo importante de tu mostrador, en un solo lugar.</h2>
-            <p>Revisa qué tienes, registra una venta y mantén actualizado el almacén sin perder tiempo.</p>
+            <p>Consulta los productos, administra tu cuenta y mantén la información de tu bodega organizada.</p>
         </div>
         <div class="hero-mark">B<br><small>odega</small></div>
     </section>
 
-    <section class="metrics" aria-label="Resumen">
+
+
+    <section class="metrics" aria-label="Resumen del inventario">
         <article><span>Productos</span><strong id="product-count">0</strong></article>
         <article><span>Unidades en almacén</span><strong id="stock-count">0</strong></article>
-        <article><span>Ventas recientes</span><strong id="sale-count">0</strong></article>
+        <article><span>Ventas recientes</span><strong id="sale-count">—</strong></article>
     </section>
 
-    <div class="content-grid">
+    <div class="content-grid" id="content-grid">
         <section class="panel">
             <div class="panel-heading">
-                <div><p class="eyebrow">CATÁLOGO</p><h2>Productos disponibles</h2></div>
-                <button class="button secondary" id="refresh-button">Actualizar</button>
+                <div>
+                    <p class="eyebrow">CATÁLOGO</p>
+                    <h2>Productos disponibles</h2>
+                </div>
+                <button class="button secondary" id="refresh-button" type="button">Actualizar</button>
             </div>
-            <div id="products" class="product-list"></div>
+
+<div class="catalog-toolbar">
+    <label class="catalog-search" for="product-search">
+        Buscar productos
+        <input
+            id="product-search"
+            type="search"
+            placeholder="Ej. leche, arroz, jabón..."
+            autocomplete="off">
+    </label>
+
+    <div class="catalog-filter">
+        <span class="filter-label">Categorías</span>
+        <div id="category-filters" class="category-filters"
+             role="group" aria-label="Filtrar por categoría">
+            <button class="category-chip active" type="button"
+                    data-category="all" aria-pressed="true">
+                Todos
+            </button>
+            <button class="category-chip" type="button"
+                    data-category="Lacteos" aria-pressed="false">
+                Lácteos
+            </button>
+            <button class="category-chip" type="button"
+                    data-category="Golosinas" aria-pressed="false">
+                Golosinas
+            </button>
+            <button class="category-chip" type="button"
+                    data-category="Bebidas" aria-pressed="false">
+                Bebidas
+            </button>
+            <button class="category-chip" type="button"
+                    data-category="Snacks" aria-pressed="false">
+                Snacks
+            </button>
+            <button class="category-chip" type="button"
+                    data-category="Abarrotes" aria-pressed="false">
+                Abarrotes
+            </button>
+            <button class="category-chip" type="button"
+                    data-category="Panaderia" aria-pressed="false">
+                Panadería
+            </button>
+            <button class="category-chip" type="button"
+                    data-category="Limpieza" aria-pressed="false">
+                Limpieza
+            </button>
+            <button class="category-chip" type="button"
+                    data-category="Higiene personal" aria-pressed="false">
+                Higiene personal
+            </button>
+        </div>
+        </div>
+
+                <p id="catalog-results" class="catalog-results"
+            aria-live="polite"></p>
+        </div>
+
+        <div id="products" class="product-list"></div>
+
+            <nav id="catalog-pagination" class="catalog-pagination"
+                aria-label="Páginas del catálogo"></nav>
+
+            <p id="products-message" class="message" role="status"></p>
         </section>
 
-        <section class="panel sale-panel">
+        <section class="panel sale-panel" id="sale-panel" hidden>
             <p class="eyebrow">PUNTO DE VENTA</p>
             <h2>Registrar venta</h2>
+            <p class="muted-text">Función disponible para usuarios con rol de gerente o administrador.</p>
+
             <form id="sale-form">
-                <label>Producto<select id="sale-product" required></select></label>
-                <label>Cantidad<input id="sale-quantity" type="number" min="1" value="1" required></label>
-                <label>Cliente <span class="optional">opcional</span><input id="customer-name" type="text" placeholder="Nombre del cliente"></label>
-                <div class="total-line"><span>Total</span><strong id="sale-total">S/ 0.00</strong></div>
+                <label for="sale-product">Producto
+                    <select id="sale-product" required></select>
+                </label>
+
+                <label for="sale-quantity">Cantidad
+                    <input id="sale-quantity" type="number" min="1" value="1" required>
+                </label>
+
+                <label for="customer-name">Cliente <span class="optional">opcional</span>
+                    <input id="customer-name" type="text" maxlength="120"
+                           placeholder="Nombre del cliente">
+                </label>
+
+                <div class="total-line">
+                    <span>Total</span>
+                    <strong id="sale-total">S/ 0.00</strong>
+                </div>
+
                 <button class="button primary" type="submit">Cobrar venta</button>
             </form>
-            <p id="sale-message" class="message" role="status"></p>
+            <p id="sale-message" class="message" role="status" aria-live="polite"></p>
         </section>
     </div>
 
-    <section class="panel public-panel">
-        <div class="panel-heading"><div><p class="eyebrow">VISTA CLIENTE</p><h2>Productos que pueden consultar</h2></div></div>
-        <div id="public-products" class="public-list"></div>
-    </section>
+
+<!-- Panel de compras disponible para clientes autenticados. -->
+<section class="panel customer-panel" id="customer-panel" hidden>
+    <div class="panel-heading">
+        <div>
+            <p class="eyebrow">MI COMPRA</p>
+            <h2>Carrito de compras</h2>
+        </div>
+        <button class="button secondary" id="clear-cart-button" type="button">
+            Vaciar carrito
+        </button>
+    </div>
+
+    <p class="muted-text">
+        Revisa los productos y las cantidades antes de confirmar tu pedido.
+    </p>
+
+    <div id="cart-items" class="cart-list"></div>
+
+    <div class="total-line">
+        <span>Total de la compra</span>
+        <strong id="cart-total">S/ 0.00</strong>
+    </div>
+
+    <button class="button primary" id="checkout-button" type="button">
+        Confirmar compra
+    </button>
+
+    <p id="cart-message" class="message" role="status" aria-live="polite"></p>
+
+    <div class="orders-section">
+        <div class="panel-heading">
+            <div>
+                <p class="eyebrow">MIS PEDIDOS</p>
+                <h2>Historial de compras</h2>
+            </div>
+            <button class="button secondary" id="refresh-orders-button" type="button">
+                Actualizar historial
+            </button>
+        </div>
+
+        <div id="orders-list" class="orders-list"></div>
+        <p id="orders-message" class="message" role="status" aria-live="polite"></p>
+    </div>
+</section>
+
+<!-- Catálogo público para consultar productos y precios. -->
+<section class="panel public-panel">
+    <div class="panel-heading">
+        <div>
+            <p class="eyebrow">VISTA CLIENTE</p>
+            <h2>Productos que pueden consultar</h2>
+        </div>
+    </div>
+    <div id="public-products" class="public-list"></div>
+</section>
 </main>
-<script src="/app.js"></script>
-<!-- MODAL DE BOLETA DE VENTA -->
+
+<!-- Ventana de la boleta de venta -->
 <div id="receiptModalBackdrop" class="modal-backdrop" style="display: none;">
     <div class="ticket-container">
         <div class="ticket-header">
             <h3>BODEGA Y GESTIÓN DE CAJA</h3>
             <p>R.U.C. 10458796541</p>
             <p>Av. España 1234 - Trujillo</p>
-            <h4>BOLETA DE VENTA ELECTRÓNICA</h4>
-            <p><strong>N°: </strong><span id="ticketNumber"></span></p>
+            <h4>BOLETA DE VENTA</h4>
+            <p><strong>N.º: </strong><span id="ticketNumber"></span></p>
             <p><strong>Fecha: </strong><span id="ticketDate"></span></p>
         </div>
-        <hr class="dashed-line"/>
+
+        <hr class="dashed-line">
+
         <table class="ticket-table">
             <thead>
                 <tr>
@@ -91,20 +259,27 @@
                 </tr>
             </tbody>
         </table>
-        <hr class="dashed-line"/>
+
+        <hr class="dashed-line">
+
         <div class="ticket-total">
             <p><strong>OP. GRAVADA:</strong> S/. <span id="ticketSubtotal"></span></p>
             <p><strong>I.G.V. (18%):</strong> S/. <span id="ticketIgv"></span></p>
             <h3><strong>TOTAL: S/. <span id="ticketTotal"></span></strong></h3>
         </div>
+
         <div class="ticket-footer">
             <p>¡Gracias por su compra!</p>
         </div>
+
         <div class="ticket-actions no-print">
             <button type="button" class="btn-primary" onclick="printReceiptTicket()">Imprimir / Guardar PDF</button>
             <button type="button" class="btn-secondary" onclick="closeReceiptModal()">Cerrar</button>
         </div>
     </div>
 </div>
+
+<script src="/app.js"></script>
+<script src="/theme.js"></script>
 </body>
 </html>
