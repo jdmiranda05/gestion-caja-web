@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>Iniciar sesión | Tienda Alondralu</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="account-page">
+<header class="topbar account-topbar">
+    <div class="brand-area">
+        <p class="eyebrow">GESTIÓN DE BODEGA</p>
+        <h1>Tienda Alondralu</h1>
+        <p class="subtitle">Tu tienda, tus compras y tu cuenta.</p>
+    </div>
+    <div class="account-actions">
+        <button class="button theme-toggle" type="button"
+                data-theme-toggle aria-label="Cambiar tema">
+            Cambiar tema
+        </button>
+        <a class="button topbar-login" href="/">Volver a la tienda</a>
+    </div>
+</header>
+
+<main class="account-layout">
+    <section class="account-card">
+        <p class="eyebrow">BIENVENIDO DE NUEVO</p>
+        <h2>Iniciar sesión</h2>
+        <p class="muted-text">
+            Ingresa tus credenciales para acceder a las funciones de tu cuenta.
+        </p>
+
+        <div id="login-error" class="message error" role="alert" hidden>
+            No se pudo iniciar sesión. Verifica tu usuario y contraseña.
+        </div>
+        <div id="logout-notice" class="message" role="status" hidden>
+            Tu sesión se ha cerrado correctamente.
+        </div>
+
+        <form id="login-form" action="/login" method="post">
+            <input id="csrf-token" type="hidden" name="_csrf" value="">
+
+            <label for="username">Nombre de usuario
+                <input id="username" name="username" type="text"
+                       autocomplete="username" required autofocus>
+            </label>
+
+            <label for="password">Contraseña
+                <input id="password" name="password" type="password"
+                       autocomplete="current-password" required>
+            </label>
+
+            <button id="login-submit" class="button primary" type="submit">
+                Iniciar sesión
+            </button>
+            <p id="login-message" class="message" role="status"
+               aria-live="polite"></p>
+        </form>
+
+        <p class="account-note">
+            ¿Todavía no tienes cuenta?
+            <a href="/registro">Crear una cuenta</a>
+        </p>
+    </section>
+</main>
+
+<script src="/theme.js"></script>
+<script>
+    // Obtiene el token CSRF antes de permitir el envío del formulario.
+    const loginForm = document.querySelector('#login-form');
+    const csrfInput = document.querySelector('#csrf-token');
+    const loginSubmit = document.querySelector('#login-submit');
+    const loginMessage = document.querySelector('#login-message');
+
+    async function prepareLoginForm() {
+        loginSubmit.disabled = true;
+        loginMessage.textContent = 'Preparando el formulario seguro...';
+
+        try {
+            const response = await fetch('/api/users/csrf', {
+                credentials: 'same-origin',
+                cache: 'no-store',
+                headers: { 'Accept': 'application/json' }
+            });
+
+            if (!response.ok) {
+                throw new Error('No se pudo preparar el inicio de sesión.');
+            }
+
+            const csrf = await response.json();
+            csrfInput.name = csrf.parameterName || '_csrf';
+            csrfInput.value = csrf.token;
+            loginMessage.textContent = '';
+            loginSubmit.disabled = false;
+        } catch (error) {
+            loginMessage.textContent =
+                'No se pudo preparar la seguridad. Recarga la página.';
+            loginMessage.classList.add('error');
+        }
+    }
+
+    // Muestra mensajes cuando Spring Security devuelve un estado en la URL.
+    const query = new URLSearchParams(window.location.search);
+
+    if (query.has('error')) {
+        document.querySelector('#login-error').hidden = false;
+    }
+
+    if (query.has('logout')) {
+        document.querySelector('#logout-notice').hidden = false;
+    }
+
+    prepareLoginForm();
+</script>
+</body>
+</html>

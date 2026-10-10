@@ -1,163 +1,1067 @@
+
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap');
 
-:root { --ink:#172321; --muted:#687975; --paper:#f4f7f2; --panel:#fff; --green:#0f766e; --lime:#d8edb8; --line:#dfe8e1; --orange:#ef8354; }
-* { box-sizing:border-box; }
-body { margin:0; background:var(--paper); color:var(--ink); font-family:'DM Sans', sans-serif; }
-.topbar { display:flex; justify-content:space-between; gap:24px; align-items:flex-start; padding:42px max(24px, calc((100% - 1180px) / 2)); background:#173d38; color:#f4f7f2; }
-h1,h2 { font-family:'Space Grotesk', sans-serif; margin:0; letter-spacing:0; }
-h1 { font-size:clamp(2.4rem, 6vw, 5rem); line-height:.95; }
-h2 { font-size:1.35rem; }
-.subtitle { max-width:530px; color:#b9d1c8; margin:16px 0 0; font-size:1.05rem; }
-.eyebrow { margin:0 0 10px; font-size:.72rem; letter-spacing:.14em; font-weight:700; color:#f5a07c; }
-.status { white-space:nowrap; border:1px solid #6d9c8d; border-radius:999px; padding:10px 14px; color:#d7eee5; font-size:.85rem; }
-.status span { display:inline-block; width:8px; height:8px; margin-right:7px; border-radius:50%; background:#9bd469; }
-.layout { max-width:1180px; margin:0 auto; padding:30px 24px 60px; }
-.hero-panel { display:flex; justify-content:space-between; align-items:center; gap:24px; background:var(--lime); padding:34px 38px; border-radius:10px; overflow:hidden; }
-.hero-panel h2 { max-width:620px; font-size:clamp(1.7rem, 3vw, 2.8rem); line-height:1.05; }
-.hero-panel p:not(.eyebrow) { max-width:620px; color:#49645b; line-height:1.55; }
-.hero-mark { flex:0 0 130px; height:130px; border-radius:50%; display:grid; place-content:center; text-align:center; background:var(--orange); color:white; font:700 4.5rem/.68 'Space Grotesk'; transform:rotate(8deg); }
-.hero-mark small { font:500 .82rem 'DM Sans'; }
-.metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:18px 0; }
-.metrics article { background:var(--panel); border:1px solid var(--line); padding:20px; border-radius:8px; }
-.metrics span { color:var(--muted); font-size:.84rem; }.metrics strong { display:block; margin-top:6px; font:700 2.1rem 'Space Grotesk'; }
-.content-grid { display:grid; grid-template-columns:1.45fr .8fr; gap:18px; }
-.panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:24px; }.panel-heading { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:20px; }
-.button { border:0; border-radius:6px; padding:11px 15px; font:700 .85rem 'DM Sans'; cursor:pointer; }.primary { background:var(--green); color:#fff; width:100%; }.secondary { color:var(--green); background:#e7f0e9; }
-.product-list { display:grid; gap:10px; }.product { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; padding:14px; border:1px solid var(--line); border-radius:7px; }.product h3 { margin:0 0 3px; font-size:1rem; }.product p { margin:0; color:var(--muted); font-size:.82rem; }.price { text-align:right; font-weight:700; color:var(--green); }.stock { display:block; color:var(--muted); font-size:.75rem; font-weight:400; margin-top:4px; }
-label { display:block; margin:16px 0; font-size:.85rem; font-weight:700; } input,select { display:block; width:100%; margin-top:7px; border:1px solid #cad8ce; border-radius:6px; padding:12px; background:white; color:var(--ink); font:inherit; } .optional { font-weight:400; color:var(--muted); }.total-line { display:flex; justify-content:space-between; align-items:center; padding:18px 0; margin-top:8px; border-top:1px solid var(--line); font-weight:700; }.total-line strong { font:700 1.5rem 'Space Grotesk'; color:var(--orange); }.message { min-height:20px; font-size:.85rem; color:var(--green); }.message.error { color:#bd4b37; }
-.public-panel { margin-top:18px; }.public-list { display:flex; flex-wrap:wrap; gap:10px; }.public-product { padding:12px 15px; background:#f1f6ee; border-radius:6px; min-width:170px; }.public-product strong { display:block; }.public-product span { color:var(--green); font-size:.85rem; }
-@media (max-width:760px) { .topbar { display:block; padding:30px 20px; }.status { display:inline-block; margin-top:22px; }.layout { padding:20px 14px 40px; }.hero-panel { padding:25px; }.hero-mark { flex-basis:90px; height:90px; font-size:3rem; }.content-grid { grid-template-columns:1fr; }.metrics { gap:8px; }.metrics article { padding:14px 10px; }.metrics strong { font-size:1.55rem; } }
+:root {
+    --ink: #172321;
+    --muted: #687975;
+    --paper: #f4f7f2;
+    --panel: #fff;
+    --green: #0f766e;
+    --lime: #d8edb8;
+    --line: #dfe8e1;
+    --orange: #ef8354;
+}
 
-/* ==========================================
-	 ESTILOS DE BOLETA DE VENTA / TICKET
-	 ========================================== */
+* {
+    box-sizing: border-box;
+}
 
+[hidden] {
+    display: none !important;
+}
+
+body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: flex-start;
+    padding: 42px max(24px, calc((100% - 1180px) / 2));
+    background: #173d38;
+    color: #f4f7f2;
+}
+
+h1, h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    margin: 0;
+    letter-spacing: 0;
+}
+
+h1 {
+    font-size: clamp(2.4rem, 6vw, 5rem);
+    line-height: .95;
+}
+
+h2 {
+    font-size: 1.35rem;
+}
+
+h3 {
+    margin-top: 0;
+}
+
+.subtitle {
+    max-width: 530px;
+    color: #b9d1c8;
+    margin: 16px 0 0;
+    font-size: 1.05rem;
+}
+
+.eyebrow {
+    margin: 0 0 10px;
+    font-size: .72rem;
+    letter-spacing: .14em;
+    font-weight: 700;
+    color: #f5a07c;
+}
+
+.status {
+    white-space: nowrap;
+    border: 1px solid #6d9c8d;
+    border-radius: 999px;
+    padding: 10px 14px;
+    color: #d7eee5;
+    font-size: .85rem;
+}
+
+.status span {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 7px;
+    border-radius: 50%;
+    background: #9bd469;
+}
+
+.layout {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 30px 24px 60px;
+}
+
+.hero-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    background: var(--lime);
+    padding: 34px 38px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.hero-panel h2 {
+    max-width: 620px;
+    font-size: clamp(1.7rem, 3vw, 2.8rem);
+    line-height: 1.05;
+}
+
+.hero-panel p:not(.eyebrow) {
+    max-width: 620px;
+    color: #49645b;
+    line-height: 1.55;
+}
+
+.hero-mark {
+    flex: 0 0 130px;
+    height: 130px;
+    border-radius: 50%;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    background: var(--orange);
+    color: white;
+    font: 700 4.5rem/.68 'Space Grotesk';
+    transform: rotate(8deg);
+}
+
+.hero-mark small {
+    font: 500 .82rem 'DM Sans';
+}
+
+.panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.panel-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.auth-panel {
+    margin-top: 18px;
+}
+
+.auth-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+}
+
+.auth-grid form,
+.session-card {
+    min-width: 0;
+}
+
+.auth-grid h3 {
+    margin-bottom: 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.1rem;
+}
+
+.session-card {
+    padding: 20px;
+    background: #f5f8f3;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+
+.session-card p {
+    color: var(--muted);
+    font-size: .9rem;
+    line-height: 1.5;
+}
+
+.session-info {
+    margin-top: 18px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+}
+
+.button {
+    display: inline-block;
+    border: 0;
+    border-radius: 6px;
+    padding: 11px 15px;
+    font: 700 .85rem 'DM Sans', sans-serif;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity .15s ease, transform .15s ease;
+}
+
+.button:hover {
+    opacity: .9;
+}
+
+.button:active {
+    transform: translateY(1px);
+}
+
+.button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.primary {
+    background: var(--green);
+    color: #fff;
+    width: 100%;
+}
+
+.secondary {
+    color: var(--green);
+    background: #e7f0e9;
+}
+
+.button-link {
+    margin-top: 8px;
+}
+
+.metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 18px 0;
+}
+
+.metrics article {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.metrics span {
+    color: var(--muted);
+    font-size: .84rem;
+}
+
+.metrics strong {
+    display: block;
+    margin-top: 6px;
+    font: 700 2.1rem 'Space Grotesk';
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: 1.45fr .8fr;
+    gap: 18px;
+}
+
+.content-grid.public-mode {
+    grid-template-columns: 1fr;
+}
+
+.product-list {
+    display: grid;
+    gap: 10px;
+}
+
+.product {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+}
+
+.product h3 {
+    margin: 0 0 3px;
+    font-size: 1rem;
+}
+
+.product p {
+    margin: 0;
+    color: var(--muted);
+    font-size: .82rem;
+}
+
+.price {
+    text-align: right;
+    font-weight: 700;
+    color: var(--green);
+}
+
+.stock {
+    display: block;
+    color: var(--muted);
+    font-size: .75rem;
+    font-weight: 400;
+    margin-top: 4px;
+}
+
+label {
+    display: block;
+    margin: 16px 0;
+    font-size: .85rem;
+    font-weight: 700;
+}
+
+input,
+select {
+    display: block;
+    width: 100%;
+    margin-top: 7px;
+    border: 1px solid #cad8ce;
+    border-radius: 6px;
+    padding: 12px;
+    background: white;
+    color: var(--ink);
+    font: inherit;
+}
+
+input:focus,
+select:focus {
+    outline: 2px solid #80b9a7;
+    outline-offset: 1px;
+}
+
+.optional {
+    font-weight: 400;
+    color: var(--muted);
+}
+
+.muted-text {
+    color: var(--muted);
+    font-size: .88rem;
+    line-height: 1.5;
+}
+
+.total-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 0;
+    margin-top: 8px;
+    border-top: 1px solid var(--line);
+    font-weight: 700;
+}
+
+.total-line strong {
+    font: 700 1.5rem 'Space Grotesk';
+    color: var(--orange);
+}
+
+.message {
+    min-height: 20px;
+    font-size: .85rem;
+    line-height: 1.5;
+    color: var(--green);
+    overflow-wrap: anywhere;
+}
+
+.message:empty {
+    display: none;
+}
+
+.message.error {
+    color: #bd4b37;
+}
+
+.public-panel {
+    margin-top: 18px;
+}
+
+.public-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.public-product {
+    padding: 12px 15px;
+    background: #f1f6ee;
+    border-radius: 6px;
+    min-width: 170px;
+}
+
+.public-product strong {
+    display: block;
+}
+
+.public-product span {
+    color: var(--green);
+    font-size: .85rem;
+}
+
+/* Estilos para la boleta de venta. */
 .modal-backdrop {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	background-color: rgba(0, 0, 0, 0.6);
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	z-index: 1000;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 20px;
 }
 
 .ticket-container {
-	background-color: #ffffff;
-	width: 320px;
-	max-width: 90%;
-	padding: 20px;
-	border-radius: 6px;
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
-	font-family: 'Courier New', Courier, monospace;
-	font-size: 13px;
-	color: #111111;
+    background-color: #fff;
+    width: 320px;
+    max-width: 100%;
+    padding: 20px;
+    border-radius: 6px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, .25);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    color: #111;
 }
 
 .ticket-header {
-	text-align: center;
+    text-align: center;
 }
 
 .ticket-header h3 {
-	margin: 0 0 5px 0;
-	font-size: 15px;
+    margin: 0 0 5px;
+    font-size: 15px;
 }
 
 .ticket-header h4 {
-	margin: 8px 0;
-	font-size: 13px;
+    margin: 8px 0;
+    font-size: 13px;
 }
 
 .ticket-header p {
-	margin: 2px 0;
+    margin: 2px 0;
 }
 
 .dashed-line {
-	border: none;
-	border-top: 1px dashed #444;
-	margin: 10px 0;
+    border: none;
+    border-top: 1px dashed #444;
+    margin: 10px 0;
 }
 
 .ticket-table {
-	width: 100%;
-	border-collapse: collapse;
-	text-align: left;
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 11px;
 }
 
-.ticket-table th, .ticket-table td {
-	padding: 4px 2px;
+.ticket-table th,
+.ticket-table td {
+    padding: 4px 2px;
+    overflow-wrap: anywhere;
 }
 
 .ticket-total {
-	text-align: right;
+    text-align: right;
 }
 
 .ticket-total p {
-	margin: 3px 0;
+    margin: 3px 0;
 }
 
 .ticket-total h3 {
-	margin: 6px 0 0 0;
+    margin: 6px 0 0;
 }
 
 .ticket-footer {
-	text-align: center;
-	margin-top: 12px;
-	font-weight: bold;
+    text-align: center;
+    margin-top: 12px;
+    font-weight: bold;
 }
 
 .ticket-actions {
-	display: flex;
-	gap: 8px;
-	margin-top: 15px;
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
 }
 
 .ticket-actions button {
-	flex: 1;
-	padding: 8px;
-	cursor: pointer;
-	border-radius: 4px;
-	border: none;
-	font-family: inherit;
+    flex: 1;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    border: none;
+    font-family: inherit;
 }
 
 .btn-primary {
-	background-color: #2b6cb0;
-	color: #fff;
+    background-color: #2b6cb0;
+    color: #fff;
 }
 
 .btn-secondary {
-	background-color: #e2e8f0;
-	color: #333;
+    background-color: #e2e8f0;
+    color: #333;
 }
 
-/* Reglas especiales para imprimir sólo el ticket */
+/* Al imprimir, muestra solamente la boleta. */
 @media print {
-	body * {
-		visibility: hidden;
-	}
-	.modal-backdrop {
-		position: absolute;
-		left: 0;
-		top: 0;
-		background: none;
-	}
-	.ticket-container, .ticket-container * {
-		visibility: visible;
-	}
-	.ticket-container {
-		position: absolute;
-		left: 50%;
-		top: 20px;
-		transform: translateX(-50%);
-		box-shadow: none;
-		border: none;
-		width: 280px;
-	}
-	.no-print {
-		display: none !important;
-	}
+    body * {
+        visibility: hidden;
+    }
+
+    .modal-backdrop {
+        position: absolute;
+        inset: 0;
+        background: none;
+        padding: 0;
+        overflow: visible;
+    }
+
+    .ticket-container,
+    .ticket-container * {
+        visibility: visible;
+    }
+
+    .ticket-container {
+        position: absolute;
+        left: 50%;
+        top: 20px;
+        transform: translateX(-50%);
+        box-shadow: none;
+        border: none;
+        width: 280px;
+        max-width: none;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+}
+
+@media (max-width: 760px) {
+    .topbar {
+        display: block;
+        padding: 30px 20px;
+    }
+
+    .status {
+        display: inline-block;
+        margin-top: 22px;
+    }
+
+    .layout {
+        padding: 20px 14px 40px;
+    }
+
+    .hero-panel {
+        padding: 25px;
+    }
+
+    .hero-mark {
+        flex-basis: 90px;
+        height: 90px;
+        font-size: 3rem;
+    }
+
+    .auth-grid,
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .metrics {
+        gap: 8px;
+    }
+
+    .metrics article {
+        padding: 14px 10px;
+    }
+
+    .metrics strong {
+        font-size: 1.55rem;
+    }
+
+    .panel {
+        padding: 18px;
+    }
+
+    .panel-heading {
+        align-items: flex-start;
+    }
+}
+
+/* Organiza la marca y las acciones de cuenta en el encabezado. */
+.topbar {
+    align-items: center;
+}
+
+/* Agrupa el acceso, el estado de sesión y el indicador del sistema. */
+.account-area {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+    min-width: 250px;
+}
+
+/* Presenta el estado de sesión sin la separación de la tarjeta anterior. */
+.topbar-session {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+/* Mejora la legibilidad del saludo en el encabezado oscuro. */
+.session-message {
+    margin: 0;
+    color: #f4f7f2;
+    font-size: 0.9rem;
+}
+
+/* Define el aspecto del botón de cierre de sesión. */
+.logout-button,
+.topbar-login {
+    border: 1px solid #8bb5a7;
+    background: transparent;
+    color: #ffffff;
+}
+
+/* Da un ancho cómodo al formulario de registro. */
+.register-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    max-width: 780px;
+}
+
+/* Mantiene el campo de contraseña y el botón en toda la fila. */
+.register-form label:nth-of-type(3),
+.register-form button,
+.register-form .message {
+    grid-column: 1 / -1;
+}
+
+/* Separa el enlace para quienes ya tienen una cuenta. */
+.auth-login-note {
+    margin-top: 20px;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.auth-login-note a {
+    color: var(--green);
+    font-weight: 700;
+}
+
+/* Adapta el encabezado y el registro a pantallas pequeñas. */
+@media (max-width: 760px) {
+    .account-area {
+        justify-content: flex-start;
+        margin-top: 24px;
+        min-width: 0;
+    }
+
+    .topbar-session {
+        justify-content: flex-start;
+    }
+
+    .register-form {
+        grid-template-columns: 1fr;
+    }
+
+    .register-form label:nth-of-type(3),
+    .register-form button,
+    .register-form .message {
+        grid-column: auto;
+    }
+}
+
+
+/* Páginas de acceso y registro. */
+:root {
+    color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --ink: #e6efec;
+    --muted: #aabcb6;
+    --paper: #101a18;
+    --panel: #1b2925;
+    --green: #5fc6b7;
+    --lime: #30462e;
+    --line: #354740;
+    --orange: #ff9b72;
+}
+
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea {
+    background: #14211e;
+    color: var(--ink);
+    border-color: var(--line);
+}
+
+:root[data-theme="dark"] .secondary {
+    background: #263b35;
+    color: var(--ink);
+}
+
+:root[data-theme="dark"] .account-card {
+    box-shadow: 0 20px 60px rgb(0 0 0 / 25%);
+}
+
+.account-page {
+    min-height: 100vh;
+    background:
+        radial-gradient(ellipse at top right, rgb(15 118 110 / 12%), transparent 45%),
+        var(--paper);
+}
+
+.account-topbar {
+    align-items: center;
+}
+
+.account-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.theme-toggle {
+    border: 1px solid #8bb5a7;
+    background: transparent;
+    color: #fff;
+}
+
+.account-layout {
+    display: flex;
+    justify-content: center;
+    padding: 55px 20px 80px;
+}
+
+.account-card {
+    width: 100%;
+    max-width: 470px;
+    padding: 36px;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: var(--panel);
+    box-shadow: 0 16px 48px rgb(23 35 33 / 8%);
+}
+
+.account-card h2 {
+    margin: 8px 0 12px;
+    font-size: clamp(1.8rem, 5vw, 2.4rem);
+}
+
+.account-card form {
+    display: grid;
+    gap: 18px;
+    margin-top: 26px;
+}
+
+.account-card label {
+    display: grid;
+    gap: 8px;
+    color: var(--ink);
+    font-weight: 700;
+}
+
+.account-card input {
+    width: 100%;
+    min-width: 0;
+    padding: 13px 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--panel);
+    color: var(--ink);
+    font: inherit;
+}
+
+.account-card input:focus-visible,
+.account-card button:focus-visible,
+.account-card a:focus-visible {
+    outline: 3px solid var(--orange);
+    outline-offset: 3px;
+}
+
+.account-card .primary {
+    min-height: 48px;
+    margin-top: 4px;
+}
+
+.account-note {
+    margin-top: 24px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.7;
+}
+
+.account-note a,
+.registration-success-link {
+    color: var(--green);
+    font-weight: 700;
+}
+
+.registration-success-link {
+    display: inline-block;
+    margin-top: 8px;
+}
+
+.account-card .message:empty {
+    display: none;
+}
+
+.account-card .message.error {
+    color: #d65b4b;
+}
+
+@media (max-width: 760px) {
+    .account-topbar {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 25px 20px;
+    }
+
+    .account-actions {
+        margin-top: 18px;
+    }
+
+    .account-layout {
+        padding: 28px 14px 50px;
+    }
+
+    .account-card {
+        padding: 25px 20px;
+    }
+}
+
+
+/* Herramientas de búsqueda y filtros del catálogo. */
+.catalog-toolbar {
+    display: grid;
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.catalog-search {
+    display: block;
+    margin: 0;
+    color: var(--ink);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.catalog-search input {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.catalog-filter {
+    display: grid;
+    gap: 10px;
+}
+
+.filter-label {
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.category-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.category-chip {
+    padding: 9px 13px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--panel);
+    color: var(--ink);
+    font: 500 0.82rem 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease,
+                border-color 0.15s ease;
+}
+
+.category-chip:hover {
+    border-color: var(--green);
+}
+
+.category-chip.active {
+    border-color: var(--green);
+    background: var(--green);
+    color: #fff;
+}
+
+.catalog-results {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.83rem;
+}
+
+/* Tarjetas del catálogo. */
+.product-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+}
+
+.product {
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: space-between;
+    gap: 14px;
+    padding: 18px;
+    transition: border-color 0.15s ease;
+}
+
+.product:hover {
+    border-color: var(--green);
+}
+
+.product-info {
+    min-width: 0;
+}
+
+.product h3 {
+    overflow-wrap: anywhere;
+    line-height: 1.4;
+}
+
+.product-category {
+    display: inline-block;
+    margin-top: 8px !important;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--muted);
+    font-size: 0.75rem;
+}
+
+.product .price {
+    text-align: left;
+    font-size: 1.15rem;
+}
+
+.product .stock {
+    margin-bottom: 12px;
+}
+
+.product .add-to-cart-button {
+    width: 100%;
+    margin-top: 4px;
+}
+
+/* Navegación entre páginas. */
+.catalog-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    margin-top: 24px;
+}
+
+.page-button {
+    min-width: 38px;
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--panel);
+    color: var(--ink);
+    font: 500 0.85rem 'DM Sans', sans-serif;
+    cursor: pointer;
+}
+
+.page-button:hover:not(:disabled) {
+    border-color: var(--green);
+}
+
+.page-button.active {
+    border-color: var(--green);
+    background: var(--green);
+    color: #fff;
+}
+
+.page-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* Segunda vista del catálogo, debajo del carrito. */
+.public-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.public-product {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    overflow-wrap: anywhere;
+}
+
+.public-product-category {
+    color: var(--muted);
+    font-size: 0.74rem;
+}
+
+.public-product strong {
+    line-height: 1.4;
+}
+
+.public-product .public-product-price {
+    color: var(--green);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.public-product .public-product-stock {
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+
+@media (max-width: 900px) {
+    .public-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .product-list,
+    .public-list {
+        grid-template-columns: 1fr;
+    }
+
+    .category-chip {
+        padding: 8px 11px;
+    }
+
+    .catalog-pagination {
+        gap: 5px;
+    }
+
+    .page-button {
+        min-width: 34px;
+        padding: 7px 9px;
+    }
 }
