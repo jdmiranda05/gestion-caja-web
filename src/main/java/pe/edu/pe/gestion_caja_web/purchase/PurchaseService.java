@@ -1,4 +1,3 @@
-
 package pe.edu.pe.gestion_caja_web.purchase;
 
 import java.math.BigDecimal;
@@ -53,7 +52,7 @@ public class PurchaseService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.UNAUTHORIZED, "No se encontró la cuenta autenticada."));
 
-                // Agrupa los productos repetidos para validar correctamente las cantidades totales.
+        // Agrupa los productos repetidos para validar correctamente las cantidades totales.
         Map<Long, Integer> quantities = new LinkedHashMap<>();
 
         for (PurchaseRequest.Item item : request.items()) {
@@ -132,6 +131,7 @@ public class PurchaseService {
 
         for (OrderItem item : order.getItems()) {
             items.add(new PurchaseResponse.Item(
+                    item.getId(),
                     item.getProductId(),
                     item.getProductName(),
                     item.getQuantity(),

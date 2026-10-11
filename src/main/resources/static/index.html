@@ -213,6 +213,64 @@
         <div id="orders-list" class="orders-list"></div>
         <p id="orders-message" class="message" role="status" aria-live="polite"></p>
     </div>
+    <!-- Sección para registrar y consultar reclamos -->
+<div class="claims-section">
+    <div class="panel-heading">
+        <div>
+            <p class="eyebrow">ATENCIÓN AL CLIENTE</p>
+            <h2>Mis reclamos</h2>
+        </div>
+
+        <button
+            class="button secondary"
+            id="refresh-claims-button"
+            type="button">
+            Actualizar reclamos
+        </button>
+    </div>
+
+    <form id="claim-form" class="claim-form">
+        <h3>Presentar un reclamo</h3>
+
+        <p id="claim-selected-product" class="claim-selected-product">
+            Selecciona un producto de tu historial de compras.
+        </p>
+
+        <input id="claim-order-id" name="orderId" type="hidden">
+        <input id="claim-order-item-id" name="orderItemId" type="hidden">
+
+        <label for="claim-reason">Motivo del reclamo</label>
+        <select id="claim-reason" name="reason" required>
+            <option value="">Selecciona un motivo</option>
+            <option value="Producto defectuoso">Producto defectuoso</option>
+            <option value="Producto incorrecto">Producto incorrecto</option>
+            <option value="Producto incompleto">Producto incompleto</option>
+            <option value="Problema con el cobro">Problema con el cobro</option>
+            <option value="Otro">Otro</option>
+        </select>
+
+        <label for="claim-description">Describe lo ocurrido</label>
+        <textarea
+            id="claim-description"
+            name="description"
+            rows="4"
+            maxlength="2000"
+            placeholder="Explica el problema con el producto o la compra..."
+            required></textarea>
+
+        <button class="button primary" type="submit" id="submit-claim-button">
+            Enviar reclamo
+        </button>
+
+        <p id="claim-form-message" class="message" role="status" aria-live="polite"></p>
+    </form>
+
+    <div class="claims-list-section">
+        <h3>Historial de reclamos</h3>
+        <div id="claims-list" class="claims-list"></div>
+        <p id="claims-message" class="message" role="status" aria-live="polite"></p>
+    </div>
+</div>
 </section>
 
 <!-- Catálogo público para consultar productos y precios. -->
