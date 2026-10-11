@@ -1,4 +1,3 @@
-
 package pe.edu.pe.gestion_caja_web.purchase;
 
 import java.math.BigDecimal;
@@ -18,6 +17,7 @@ public record PurchaseResponse(
      * Representa el detalle de un producto dentro de una compra.
      */
     public record Item(
+            Long id,
             Long productId,
             String productName,
             Integer quantity,

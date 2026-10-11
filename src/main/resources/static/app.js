@@ -22,6 +22,17 @@ const cartMessageElement = document.querySelector('#cart-message');
 const ordersListElement = document.querySelector('#orders-list');
 const ordersMessageElement = document.querySelector('#orders-message');
 const checkoutButton = document.querySelector('#checkout-button');
+// Elementos de registro y consulta de reclamos del cliente.
+const claimFormElement = document.querySelector('#claim-form');
+const claimOrderIdElement = document.querySelector('#claim-order-id');
+const claimOrderItemIdElement = document.querySelector('#claim-order-item-id');
+const claimSelectedProductElement = document.querySelector('#claim-selected-product');
+const claimFormMessageElement = document.querySelector('#claim-form-message');
+const claimsListElement = document.querySelector('#claims-list');
+const claimsMessageElement = document.querySelector('#claims-message');
+const submitClaimButton = document.querySelector('#submit-claim-button');
+
+let claimSubmissionInProgress = false;
 
 let products = [];
 let currentUser = null;
@@ -286,10 +297,6 @@ async function readJson(response) {
 /**
  * Carga los productos y actualiza el catálogo y el resumen de inventario.
  */
-
-/**
- * Carga los productos y actualiza el catálogo y el resumen de inventario.
- */
 async function loadProducts() {
     const message = document.querySelector('#products-message');
 
@@ -386,8 +393,8 @@ async function loadCurrentUser() {
             renderCart();
 
             showMessage(
-            sessionMessage,
-            'Bienvenido. Inicia sesión o crea una cuenta para continuar.'
+                sessionMessage,
+                'Bienvenido. Inicia sesión o crea una cuenta para continuar.'
             );
 
             return;
@@ -397,8 +404,8 @@ async function loadCurrentUser() {
             throw new Error('No se pudo comprobar la sesión actual.');
         }
 
-            // Actualiza la interfaz para mostrar únicamente las opciones de la sesión activa.
-            currentUser = await response.json();
+        // Actualiza la interfaz para mostrar únicamente las opciones de la sesión activa.
+        currentUser = await response.json();
 
         loginLink.hidden = true;
         registerLink.hidden = true;
@@ -409,7 +416,7 @@ async function loadCurrentUser() {
             `Hola, ${currentUser.username}. Tu sesión está activa.`
         );
 
-                // Identifica los permisos y muestra los paneles correspondientes al rol.
+        // Identifica los permisos y muestra los paneles correspondientes al rol.
         const canManageSales = ['MANAGER', 'ADMIN'].includes(currentUser.role);
         const isCustomer = currentUser.role === 'CUSTOMER';
 
@@ -420,10 +427,11 @@ async function loadCurrentUser() {
         // Vuelve a cargar el catálogo para mostrar los botones del rol actual.
         await loadProducts();
 
-        // Actualiza el carrito y el historial cuando inicia sesión un cliente.
+        // Actualiza el carrito, historial y reclamos cuando inicia sesión un cliente.
         if (isCustomer) {
             renderCart();
             await loadMyOrders();
+            await loadMyClaims();
         }
 
         if (canManageSales) {
@@ -456,7 +464,7 @@ async function loadCurrentUser() {
             true
         );
     }
-    }
+}
 
 /**
  * Carga las ventas recientes solo cuando el usuario tiene permisos de caja.
@@ -561,7 +569,6 @@ function renderCart() {
     cartTotalElement.textContent = money(total);
     checkoutButton.disabled = checkoutInProgress;
 }
-
 /**
  * Agrega un producto al carrito sin superar las unidades disponibles.
  */
@@ -609,7 +616,6 @@ async function loadMyOrders() {
             credentials: 'same-origin',
             cache: 'no-store'
         });
-
         const data = await readJson(response);
 
         if (!response.ok) {
@@ -629,19 +635,12 @@ async function loadMyOrders() {
         const chronologicalOrders = [...data].sort((a, b) => {
             const dateA = new Date(a.createdAt).getTime();
             const dateB = new Date(b.createdAt).getTime();
-
-            if (dateA !== dateB) {
-                return dateA - dateB;
-            }
-
+            if (dateA !== dateB) return dateA - dateB;
             return Number(a.id) - Number(b.id);
         });
 
         customerOrderNumbers = new Map(
-            chronologicalOrders.map((order, index) => [
-            Number(order.id),
-            index + 1
-        ])
+            chronologicalOrders.map((order, index) => [Number(order.id), index + 1])
         );
 
         ordersListElement.innerHTML = data.map(order => {
@@ -649,18 +648,39 @@ async function loadMyOrders() {
                 ? new Date(order.createdAt).toLocaleString('es-PE')
                 : 'Fecha no disponible';
 
-            const itemsHtml = (order.items || []).map(item => `
-                <li>
-                    ${escapeHtml(item.productName || 'Producto')}
-                    × ${Number(item.quantity)}
-                    — ${money(item.lineTotal)}
-                </li>
-            `).join('');
+            const itemsHtml = (order.items || []).map(item => {
+                console.log('Pedido:', order.id);
+console.log('Producto completo:', item);
+console.log('ID del producto:', item.id);
+                const productName = escapeHtml(item.productName || 'Producto');
+                const hasItemId = item.id !== null && item.id !== undefined;
 
+                return `
+                    <li class="order-item">
+                        <div class="order-item-details">
+                            <span>${productName}</span>
+                            <span>× ${Number(item.quantity)} — ${money(item.lineTotal)}</span>
+                        </div>
+                        ${hasItemId ? `
+                            <button class="button secondary claim-product-button"
+                                    type="button"
+                                    data-claim-order-id="${Number(order.id)}"
+                                    data-claim-order-item-id="${Number(item.id)}"
+                                    data-claim-product-name="${productName}">
+                                Presentar reclamo
+                            </button>
+                        ` : `
+                            <p class="message">No se pudo identificar este artículo para reclamar.</p>
+                        `}
+                    </li>
+                `;
+            }).join('');
+
+            const orderNumber = customerOrderNumbers.get(Number(order.id)) ?? Number(order.id);
             return `
                 <article class="order-card">
                     <div>
-                        <strong>Pedido #${customerOrderNumbers.get(Number(order.id)) ?? Number(order.id)}</strong>
+                        <strong>Pedido #${orderNumber}</strong>
                         <p>${escapeHtml(date)}</p>
                     </div>
                     <ul>${itemsHtml}</ul>
@@ -678,6 +698,130 @@ async function loadMyOrders() {
         );
     }
 }
+
+function getClaimStatusLabel(status) {
+    const labels = {
+        PENDING: 'Pendiente',
+        IN_REVIEW: 'En revisión',
+        RESOLVED: 'Resuelto',
+        REJECTED: 'Rechazado'
+    };
+    return labels[status] || status || 'Estado desconocido';
+}
+
+/** Carga los reclamos registrados por el cliente autenticado. */
+async function loadMyClaims() {
+    if (!currentUser || currentUser.role !== 'CUSTOMER') return;
+
+    showMessage(claimsMessageElement, 'Cargando reclamos...');
+    try {
+        const response = await fetch('/api/claims/my-claims', {
+            headers: { 'Accept': 'application/json' },
+            credentials: 'same-origin',
+            cache: 'no-store'
+        });
+        const data = await readJson(response);
+
+        if (!response.ok) {
+            throw new Error(data.message || data.detail || 'No se pudieron cargar tus reclamos.');
+        }
+
+        if (!Array.isArray(data) || data.length === 0) {
+            claimsListElement.innerHTML = '';
+            showMessage(claimsMessageElement, 'Todavía no has presentado reclamos.');
+            return;
+        }
+
+        claimsListElement.innerHTML = data.map(claim => {
+            const date = claim.createdAt
+                ? new Date(claim.createdAt).toLocaleString('es-PE')
+                : 'Fecha no disponible';
+            const orderNumber = customerOrderNumbers.get(Number(claim.orderId)) ?? Number(claim.orderId);
+            return `
+                <article class="claim-card">
+                    <div class="claim-card-heading">
+                        <strong>Reclamo #${Number(claim.id)}</strong>
+                        <span class="claim-status">${escapeHtml(getClaimStatusLabel(claim.status))}</span>
+                    </div>
+                    <p><strong>Pedido:</strong> #${orderNumber}</p>
+                    <p><strong>Producto:</strong> ${escapeHtml(claim.productName || 'Producto')}</p>
+                    <p><strong>Motivo:</strong> ${escapeHtml(claim.reason || '')}</p>
+                    <p class="claim-description">${escapeHtml(claim.description || '')}</p>
+                    <p class="claim-date"><strong>Fecha:</strong> ${escapeHtml(date)}</p>
+                </article>
+            `;
+        }).join('');
+        showMessage(claimsMessageElement, '');
+    } catch (error) {
+        showMessage(
+            claimsMessageElement,
+            error.message || 'Ocurrió un error al cargar los reclamos.',
+            true
+        );
+    }
+}
+
+/** Envía un reclamo para un artículo de una compra del cliente. */
+claimFormElement.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (claimSubmissionInProgress) return;
+
+    if (!currentUser || currentUser.role !== 'CUSTOMER') {
+        showMessage(claimFormMessageElement, 'Inicia sesión como cliente para presentar un reclamo.', true);
+        return;
+    }
+
+    const orderId = Number(claimOrderIdElement.value);
+    const orderItemId = Number(claimOrderItemIdElement.value);
+    const reason = document.querySelector('#claim-reason').value;
+    const description = document.querySelector('#claim-description').value.trim();
+
+    if (!Number.isInteger(orderId) || orderId <= 0 || !Number.isInteger(orderItemId) || orderItemId <= 0) {
+        showMessage(claimFormMessageElement, 'Selecciona un artículo de tu historial de compras.', true);
+        return;
+    }
+    if (!reason || !description) {
+        showMessage(claimFormMessageElement, 'Completa el motivo y la descripción del reclamo.', true);
+        return;
+    }
+
+    claimSubmissionInProgress = true;
+    submitClaimButton.disabled = true;
+    showMessage(claimFormMessageElement, 'Registrando reclamo...');
+
+    try {
+        const response = await apiRequest('/api/claims', {
+            method: 'POST',
+            body: JSON.stringify({ orderId, orderItemId, reason, description })
+        });
+        const data = await readJson(response);
+
+        if (!response.ok) {
+            throw new Error(
+                data.message || data.detail ||
+                (response.status === 401
+                    ? 'Tu sesión ha caducado. Inicia sesión nuevamente.'
+                    : response.status === 403
+                        ? 'No tienes permiso para presentar este reclamo.'
+                        : 'No se pudo registrar el reclamo.')
+            );
+        }
+
+        claimFormElement.reset();
+        claimSelectedProductElement.textContent = 'Selecciona un producto de tu historial de compras.';
+        showMessage(claimFormMessageElement, `Reclamo #${Number(data.id)} registrado correctamente.`);
+        await loadMyClaims();
+    } catch (error) {
+        showMessage(
+            claimFormMessageElement,
+            error.message || 'Ocurrió un error al enviar el reclamo.',
+            true
+        );
+    } finally {
+        claimSubmissionInProgress = false;
+        submitClaimButton.disabled = false;
+    }
+});
 
 /**
  * Envía la compra al servidor y actualiza el catálogo tras la confirmación.
@@ -726,9 +870,9 @@ async function checkout() {
         // Vacía el carrito solo cuando el servidor confirma la compra.
         cart = [];
 
-            await loadProducts();
-                renderCart();
-            await loadMyOrders();
+        await loadProducts();
+        renderCart();
+        await loadMyOrders();
 
         const customerOrderNumber =
             customerOrderNumbers.get(Number(data.id)) ?? Number(data.id);
@@ -758,7 +902,6 @@ if (productSearchElement) {
         renderCatalog();
     });
 }
-
 /**
  * Filtra el catálogo al seleccionar una categoría.
  */
@@ -885,7 +1028,24 @@ checkoutButton.addEventListener('click', checkout);
  */
 document.querySelector('#refresh-orders-button').addEventListener('click', loadMyOrders);
 
+document.querySelector('#refresh-claims-button').addEventListener('click', loadMyClaims);
 
+// Permite seleccionar un artículo del historial para completar el formulario de reclamo.
+ordersListElement.addEventListener('click', event => {
+    const button = event.target.closest('.claim-product-button');
+    if (!button) return;
+
+    if (!currentUser || currentUser.role !== 'CUSTOMER') {
+        showMessage(claimFormMessageElement, 'Inicia sesión como cliente para presentar un reclamo.', true);
+        return;
+    }
+
+    claimOrderIdElement.value = button.dataset.claimOrderId;
+    claimOrderItemIdElement.value = button.dataset.claimOrderItemId;
+    claimSelectedProductElement.textContent = `Producto seleccionado: ${button.dataset.claimProductName}`;
+    showMessage(claimFormMessageElement, '');
+    claimFormElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
 
 /**
  * Registra una venta y muestra la boleta si el servidor confirma la operación.

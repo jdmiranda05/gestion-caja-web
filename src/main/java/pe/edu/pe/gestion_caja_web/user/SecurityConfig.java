@@ -76,6 +76,18 @@ public class SecurityConfig {
                 .requestMatchers("/api/sales/**")
                     .hasAnyRole("MANAGER", "ADMIN")
 
+                                // Permite registrar reclamos únicamente a los clientes.
+                .requestMatchers(HttpMethod.POST, "/api/claims")
+                    .hasRole("CUSTOMER")
+
+                // Permite consultar los reclamos propios del cliente.
+                .requestMatchers(HttpMethod.GET, "/api/claims/my-claims")
+                    .hasRole("CUSTOMER")
+
+                // Reserva la consulta general de reclamos al personal autorizado.
+                .requestMatchers(HttpMethod.GET, "/api/claims")
+                    .hasAnyRole("MANAGER", "ADMIN")
+
                 // Limita las compras al rol de cliente.
                 .requestMatchers("/api/purchases/**")
                     .hasRole("CUSTOMER")
