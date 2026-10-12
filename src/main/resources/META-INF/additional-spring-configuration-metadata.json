@@ -1,0 +1,16 @@
+
+{
+  "properties": [
+    {
+      "name": "app.jwt.secret",
+      "type": "java.lang.String",
+      "description": "Clave secreta en Base64 utilizada para firmar y validar tokens JWT."
+    },
+    {
+      "name": "app.jwt.expiration-minutes",
+      "type": "java.lang.Long",
+      "description": "Tiempo de expiracion de los tokens JWT en minutos.",
+      "defaultValue": 60
+    }
+  ]
+}

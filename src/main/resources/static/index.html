@@ -211,30 +211,65 @@
         </div>
 
         <div id="orders-list" class="orders-list"></div>
-        <p id="orders-message" class="message" role="status" aria-live="polite"></p>
-    </div>
-    <!-- Sección para registrar y consultar reclamos -->
-<div class="claims-section">
-    <div class="panel-heading">
-        <div>
-            <p class="eyebrow">ATENCIÓN AL CLIENTE</p>
-            <h2>Mis reclamos</h2>
-        </div>
+
+        <!-- Controles de paginación del historial de compras. -->
+        <nav
+            id="orders-pagination"
+            class="catalog-pagination"
+            aria-label="Páginas del historial de compras"
+            hidden>
 
         <button
+            id="orders-prev-button"
             class="button secondary"
-            id="refresh-claims-button"
             type="button">
-            Actualizar reclamos
+            ← Anterior
         </button>
+
+        <span
+            id="orders-page-info"
+            class="pagination-info"
+            aria-live="polite">
+            Página 1 de 1
+        </span>
+
+        <button
+            id="orders-next-button"
+            class="button secondary"
+            type="button">
+            Siguiente →
+        </button>
+    </nav>
+
+    <p
+        id="orders-message"
+        class="message"
+        role="status"
+        aria-live="polite">
+    </p>
     </div>
+    <!-- Sección para registrar y consultar reclamos -->
+        <div class="claims-section">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">ATENCIÓN AL CLIENTE</p>
+                    <h2>Mis reclamos</h2>
+                </div>
 
-    <form id="claim-form" class="claim-form">
-        <h3>Presentar un reclamo</h3>
+                <button
+                    class="button secondary"
+                    id="refresh-claims-button"
+                    type="button">
+                    Actualizar reclamos
+                </button>
+            </div>
 
-        <p id="claim-selected-product" class="claim-selected-product">
-            Selecciona un producto de tu historial de compras.
-        </p>
+            <form id="claim-form" class="claim-form">
+                <h3>Presentar un reclamo</h3>
+
+                <p id="claim-selected-product" class="claim-selected-product">
+                    Selecciona un producto de tu historial de compras.
+                </p>
 
         <input id="claim-order-id" name="orderId" type="hidden">
         <input id="claim-order-item-id" name="orderItemId" type="hidden">
@@ -268,20 +303,39 @@
     <div class="claims-list-section">
         <h3>Historial de reclamos</h3>
         <div id="claims-list" class="claims-list"></div>
-        <p id="claims-message" class="message" role="status" aria-live="polite"></p>
+
+<!-- Paginación del historial de reclamos -->
+<nav
+    id="claims-pagination"
+    class="catalog-pagination"
+    aria-label="Páginas del historial de reclamos"
+    hidden>
+
+    <button
+        id="claims-prev-button"
+        class="button secondary"
+        type="button">
+        ← Anterior
+    </button>
+
+    <span
+        id="claims-page-info"
+        class="pagination-info"
+        aria-live="polite">
+        Página 1 de 1
+    </span>
+
+    <button
+        id="claims-next-button"
+        class="button secondary"
+        type="button">
+        Siguiente →
+    </button>
+</nav>
+
+<p id="claims-message" class="message" role="status" aria-live="polite"></p>
     </div>
 </div>
-</section>
-
-<!-- Catálogo público para consultar productos y precios. -->
-<section class="panel public-panel">
-    <div class="panel-heading">
-        <div>
-            <p class="eyebrow">VISTA CLIENTE</p>
-            <h2>Productos que pueden consultar</h2>
-        </div>
-    </div>
-    <div id="public-products" class="public-list"></div>
 </section>
 </main>
 

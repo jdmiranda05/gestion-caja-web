@@ -1,10 +1,9 @@
 const productsElement = document.querySelector('#products');
-const publicProductsElement = document.querySelector('#public-products');
 const saleProductElement = document.querySelector('#sale-product');
 const saleQuantityElement = document.querySelector('#sale-quantity');
 const saleTotalElement = document.querySelector('#sale-total');
 const saleMessageElement = document.querySelector('#sale-message');
-// Controles de búsqueda, categoría y paginación del catálogo.
+// Controles de bÃºsqueda, categorÃ­a y paginaciÃ³n del catÃ¡logo.
 const productSearchElement = document.querySelector('#product-search');
 const categoryFiltersElement = document.querySelector('#category-filters');
 const catalogResultsElement = document.querySelector('#catalog-results');
@@ -38,24 +37,33 @@ let products = [];
 let currentUser = null;
 let csrfInfo = null;
 
-// Guarda el número de pedido visible para cada compra del cliente.
+// Guarda el nÃºmero de pedido visible para cada compra del cliente.
 let customerOrderNumbers = new Map();
 
-// Mantiene los productos y cantidades seleccionados durante la sesión del navegador.
+// PaginaciÃ³n del historial de compras.
+const ORDERS_PER_PAGE = 6;
+let currentOrdersPage = 1;
+
+// PaginaciÃ³n y numeraciÃ³n individual de reclamos.
+const CLAIMS_PER_PAGE = 6;
+let currentClaimsPage = 1;
+let customerClaimNumbers = new Map();
+
+// Mantiene los productos y cantidades seleccionados durante la sesiÃ³n del navegador.
 let cart = [];
 
-// Evita confirmar varias compras simultáneamente desde el botón del carrito.
+// Evita confirmar varias compras simultÃ¡neamente desde el botÃ³n del carrito.
 let checkoutInProgress = false;
 
 /**
- * Formatea una cantidad numérica como moneda peruana.
+ * Formatea una cantidad numÃ©rica como moneda peruana.
  */
 function money(value) {
     return `S/ ${Number(value).toFixed(2)}`;
 }
 
 /**
- * Normaliza texto para buscar sin distinguir mayúsculas ni tildes.
+ * Normaliza texto para buscar sin distinguir mayÃºsculas ni tildes.
  */
 function normalizeCatalogText(value) {
     return String(value ?? '')
@@ -65,7 +73,7 @@ function normalizeCatalogText(value) {
 }
 
 /**
- * Obtiene los productos que coinciden con la búsqueda y la categoría.
+ * Obtiene los productos que coinciden con la bÃºsqueda y la categorÃ­a.
  */
 function getFilteredProducts() {
     const searchText = normalizeCatalogText(productSearchElement.value.trim());
@@ -89,7 +97,7 @@ function getFilteredProducts() {
 }
 
 /**
- * Dibuja los botones de paginación del catálogo.
+ * Dibuja los botones de paginaciÃ³n del catÃ¡logo.
  */
 function renderCatalogPagination(totalPages) {
     if (totalPages <= 1) {
@@ -101,7 +109,7 @@ function renderCatalogPagination(totalPages) {
         <button class="page-button" type="button"
                 data-page="${currentCatalogPage - 1}"
                 ${currentCatalogPage === 1 ? 'disabled' : ''}
-                aria-label="Página anterior">
+                aria-label="PÃ¡gina anterior">
             Anterior
         </button>
     `;
@@ -112,7 +120,7 @@ function renderCatalogPagination(totalPages) {
                 class="page-button ${page === currentCatalogPage ? 'active' : ''}"
                 type="button"
                 data-page="${page}"
-                aria-label="Página ${page}"
+                aria-label="PÃ¡gina ${page}"
                 aria-current="${page === currentCatalogPage ? 'page' : 'false'}">
                 ${page}
             </button>
@@ -123,7 +131,7 @@ function renderCatalogPagination(totalPages) {
         <button class="page-button" type="button"
                 data-page="${currentCatalogPage + 1}"
                 ${currentCatalogPage === totalPages ? 'disabled' : ''}
-                aria-label="Página siguiente">
+                aria-label="PÃ¡gina siguiente">
             Siguiente
         </button>
     `;
@@ -132,14 +140,14 @@ function renderCatalogPagination(totalPages) {
 }
 
 /**
- * Actualiza ambas vistas del catálogo usando los mismos filtros y página.
+ * Actualiza ambas vistas del catÃ¡logo usando los mismos filtros y pÃ¡gina.
  */
 function renderCatalog() {
     const filteredProducts = getFilteredProducts();
     const totalProducts = filteredProducts.length;
     const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
 
-    // Mantiene la página válida cuando cambia la búsqueda o el catálogo.
+    // Mantiene la pÃ¡gina vÃ¡lida cuando cambia la bÃºsqueda o el catÃ¡logo.
     if (totalPages === 0) {
         currentCatalogPage = 1;
     } else {
@@ -177,20 +185,6 @@ function renderCatalog() {
         </article>
     `).join('');
 
-    publicProductsElement.innerHTML = visibleProducts.map(product => `
-        <article class="public-product">
-            <span class="public-product-category">
-                ${escapeHtml(product.category || 'General')}
-            </span>
-            <strong>${escapeHtml(product.name)}</strong>
-            <span class="public-product-price">${money(product.price)}</span>
-            <span class="public-product-stock">
-                ${Number(product.stock) > 0
-                    ? `${Number(product.stock)} disponibles`
-                    : 'Agotado'}
-            </span>
-        </article>
-    `).join('');
 
     if (totalProducts === 0) {
         const searchText = productSearchElement.value.trim();
@@ -199,7 +193,7 @@ function renderCatalog() {
             document.querySelector('#products-message'),
             searchText || selectedCategory !== 'all'
                 ? 'No se encontraron productos con esos filtros.'
-                : 'Todavía no hay productos registrados.'
+                : 'TodavÃ­a no hay productos registrados.'
         );
     } else {
         showMessage(document.querySelector('#products-message'), '');
@@ -216,7 +210,7 @@ function renderCatalog() {
             );
 
             catalogResultsElement.textContent =
-                `Mostrando ${firstProduct}–${lastProduct} de ${totalProducts} productos`;
+                `Mostrando ${firstProduct}â€“${lastProduct} de ${totalProducts} productos`;
         }
     }
 
@@ -245,20 +239,20 @@ async function getCsrfToken() {
     });
 
     if (!response.ok) {
-        throw new Error('No se pudo preparar la protección de seguridad. Recarga la página.');
+        throw new Error('No se pudo preparar la protecciÃ³n de seguridad. Recarga la pÃ¡gina.');
     }
 
     csrfInfo = await response.json();
 
     if (!csrfInfo.token || !csrfInfo.headerName) {
-        throw new Error('El servidor no devolvió un token de seguridad válido.');
+        throw new Error('El servidor no devolviÃ³ un token de seguridad vÃ¡lido.');
     }
 
     return csrfInfo;
 }
 
 /**
- * Envía una solicitud JSON incluyendo el token CSRF cuando corresponde.
+ * EnvÃ­a una solicitud JSON incluyendo el token CSRF cuando corresponde.
  */
 async function apiRequest(url, options = {}) {
     const requestOptions = { ...options };
@@ -284,7 +278,7 @@ async function apiRequest(url, options = {}) {
 }
 
 /**
- * Lee una respuesta JSON y proporciona un objeto vacío si no contiene JSON válido.
+ * Lee una respuesta JSON y proporciona un objeto vacÃ­o si no contiene JSON vÃ¡lido.
  */
 async function readJson(response) {
     try {
@@ -295,7 +289,7 @@ async function readJson(response) {
 }
 
 /**
- * Carga los productos y actualiza el catálogo y el resumen de inventario.
+ * Carga los productos y actualiza el catÃ¡logo y el resumen de inventario.
  */
 async function loadProducts() {
     const message = document.querySelector('#products-message');
@@ -307,7 +301,7 @@ async function loadProducts() {
         });
 
         if (!response.ok) {
-            throw new Error('No se pudo cargar el catálogo de productos.');
+            throw new Error('No se pudo cargar el catÃ¡logo de productos.');
         }
 
         products = await response.json();
@@ -340,7 +334,7 @@ async function loadProducts() {
     } catch (error) {
         showMessage(
             message,
-            error.message || 'Ocurrió un error al cargar los productos.',
+            error.message || 'OcurriÃ³ un error al cargar los productos.',
             true
         );
     }
@@ -360,7 +354,7 @@ function escapeHtml(value) {
 }
 
 /**
- * Consulta la sesión actual y muestra las opciones permitidas para el rol del usuario.
+ * Consulta la sesiÃ³n actual y muestra las opciones permitidas para el rol del usuario.
  */
 async function loadCurrentUser() {
     const sessionMessage = document.querySelector('#session-message');
@@ -379,7 +373,7 @@ async function loadCurrentUser() {
         });
 
         if (response.status === 401 || response.status === 403) {
-            // Restablece la vista pública cuando no hay una sesión autenticada.
+            // Restablece la vista pÃºblica cuando no hay una sesiÃ³n autenticada.
             currentUser = null;
             salePanel.hidden = true;
             customerPanel.hidden = true;
@@ -387,24 +381,24 @@ async function loadCurrentUser() {
             logoutButton.hidden = true;
 
             contentGrid.classList.add('public-mode');
-            saleCount.textContent = '—';
+            saleCount.textContent = 'â€”';
 
             cart = [];
             renderCart();
 
             showMessage(
                 sessionMessage,
-                'Bienvenido. Inicia sesión o crea una cuenta para continuar.'
+                'Bienvenido. Inicia sesiÃ³n o crea una cuenta para continuar.'
             );
 
             return;
         }
 
         if (!response.ok) {
-            throw new Error('No se pudo comprobar la sesión actual.');
+            throw new Error('No se pudo comprobar la sesiÃ³n actual.');
         }
 
-        // Actualiza la interfaz para mostrar únicamente las opciones de la sesión activa.
+        // Actualiza la interfaz para mostrar Ãºnicamente las opciones de la sesiÃ³n activa.
         currentUser = await response.json();
 
         loginLink.hidden = true;
@@ -413,7 +407,7 @@ async function loadCurrentUser() {
 
         showMessage(
             sessionMessage,
-            `Hola, ${currentUser.username}. Tu sesión está activa.`
+            `Hola, ${currentUser.username}. Tu sesiÃ³n estÃ¡ activa.`
         );
 
         // Identifica los permisos y muestra los paneles correspondientes al rol.
@@ -424,10 +418,10 @@ async function loadCurrentUser() {
         customerPanel.hidden = !isCustomer;
         contentGrid.classList.toggle('public-mode', !canManageSales);
 
-        // Vuelve a cargar el catálogo para mostrar los botones del rol actual.
+        // Vuelve a cargar el catÃ¡logo para mostrar los botones del rol actual.
         await loadProducts();
 
-        // Actualiza el carrito, historial y reclamos cuando inicia sesión un cliente.
+        // Actualiza el carrito, historial y reclamos cuando inicia sesiÃ³n un cliente.
         if (isCustomer) {
             renderCart();
             await loadMyOrders();
@@ -437,14 +431,14 @@ async function loadCurrentUser() {
         if (canManageSales) {
             await loadSales();
         } else {
-            saleCount.textContent = '—';
+            saleCount.textContent = 'â€”';
             showMessage(
                 saleMessageElement,
-                'Tu cuenta es de cliente. La caja está reservada al personal autorizado.'
+                'Tu cuenta es de cliente. La caja estÃ¡ reservada al personal autorizado.'
             );
         }
     } catch (error) {
-        // Muestra las opciones públicas si no se pudo comprobar la sesión.
+        // Muestra las opciones pÃºblicas si no se pudo comprobar la sesiÃ³n.
         currentUser = null;
         salePanel.hidden = true;
         customerPanel.hidden = true;
@@ -453,14 +447,14 @@ async function loadCurrentUser() {
         logoutButton.hidden = true;
 
         contentGrid.classList.add('public-mode');
-        saleCount.textContent = '—';
+        saleCount.textContent = 'â€”';
 
         cart = [];
         renderCart();
 
         showMessage(
             sessionMessage,
-            error.message || 'No se pudo comprobar la sesión.',
+            error.message || 'No se pudo comprobar la sesiÃ³n.',
             true
         );
     }
@@ -471,7 +465,7 @@ async function loadCurrentUser() {
  */
 async function loadSales() {
     if (!currentUser || !['MANAGER', 'ADMIN'].includes(currentUser.role)) {
-        document.querySelector('#sale-count').textContent = '—';
+        document.querySelector('#sale-count').textContent = 'â€”';
         return;
     }
 
@@ -492,13 +486,13 @@ async function loadSales() {
         const sales = await response.json();
         document.querySelector('#sale-count').textContent = sales.length;
     } catch (error) {
-        document.querySelector('#sale-count').textContent = '—';
+        document.querySelector('#sale-count').textContent = 'â€”';
         showMessage(saleMessageElement, error.message, true);
     }
 }
 
 /**
- * Calcula el importe de la venta según el producto y la cantidad seleccionados.
+ * Calcula el importe de la venta segÃºn el producto y la cantidad seleccionados.
  */
 function updateTotal() {
     const product = products.find(item => String(item.id) === saleProductElement.value);
@@ -514,13 +508,13 @@ function updateTotal() {
 function renderCart() {
     if (!cartItemsElement || !cartTotalElement) return;
 
-    // Elimina del carrito los productos que ya no aparecen en el catálogo.
+    // Elimina del carrito los productos que ya no aparecen en el catÃ¡logo.
     cart = cart.filter(item =>
         products.some(product => Number(product.id) === item.productId)
     );
 
     if (cart.length === 0) {
-        cartItemsElement.innerHTML = '<p class="muted-text">Tu carrito está vacío.</p>';
+        cartItemsElement.innerHTML = '<p class="muted-text">Tu carrito estÃ¡ vacÃ­o.</p>';
         cartTotalElement.textContent = money(0);
         checkoutButton.disabled = true;
         return;
@@ -574,7 +568,7 @@ function renderCart() {
  */
 function addToCart(productId) {
     if (!currentUser || currentUser.role !== 'CUSTOMER') {
-        showMessage(cartMessageElement, 'Inicia sesión como cliente para comprar.', true);
+        showMessage(cartMessageElement, 'Inicia sesiÃ³n como cliente para comprar.', true);
         return;
     }
 
@@ -589,7 +583,7 @@ function addToCart(productId) {
 
     if (cartItem) {
         if (cartItem.quantity >= Number(product.stock)) {
-            showMessage(cartMessageElement, 'No puedes agregar más unidades que el stock disponible.', true);
+            showMessage(cartMessageElement, 'No puedes agregar mÃ¡s unidades que el stock disponible.', true);
             return;
         }
 
@@ -598,7 +592,7 @@ function addToCart(productId) {
         cart.push({ productId, quantity: 1 });
     }
 
-    showMessage(cartMessageElement, `${product.name} se agregó al carrito.`);
+    showMessage(cartMessageElement, `${product.name} se agregÃ³ al carrito.`);
     renderCart();
 }
 
@@ -627,11 +621,11 @@ async function loadMyOrders() {
         if (!Array.isArray(data) || data.length === 0) {
             ordersListElement.innerHTML = '';
             customerOrderNumbers.clear();
-            showMessage(ordersMessageElement, 'Todavía no tienes compras registradas.');
+            showMessage(ordersMessageElement, 'TodavÃ­a no tienes compras registradas.');
             return;
         }
 
-        // Numera los pedidos de cada cliente desde el más antiguo.
+        // Numera los pedidos de cada cliente desde el mÃ¡s antiguo.
         const chronologicalOrders = [...data].sort((a, b) => {
             const dateA = new Date(a.createdAt).getTime();
             const dateB = new Date(b.createdAt).getTime();
@@ -643,15 +637,39 @@ async function loadMyOrders() {
             chronologicalOrders.map((order, index) => [Number(order.id), index + 1])
         );
 
-        ordersListElement.innerHTML = data.map(order => {
+        // Calcula los pedidos que corresponden a la pÃ¡gina actual.
+        const totalPages = Math.ceil(data.length / ORDERS_PER_PAGE);
+
+        currentOrdersPage = Math.max(
+            1,
+            Math.min(currentOrdersPage, totalPages)
+        );
+
+        const startIndex = (currentOrdersPage - 1) * ORDERS_PER_PAGE;
+
+        const visibleOrders = data.slice(
+            startIndex,
+            startIndex + ORDERS_PER_PAGE
+        );
+
+        // Actualiza los controles de paginaciÃ³n.
+        ordersPaginationElement.hidden = totalPages <= 1;
+
+        ordersPageInfoElement.textContent =
+            `PÃ¡gina ${currentOrdersPage} de ${totalPages} Â· ${data.length} compras`;
+
+        ordersPrevButton.disabled = currentOrdersPage === 1;
+        ordersNextButton.disabled = currentOrdersPage >= totalPages;
+
+        ordersListElement.innerHTML = visibleOrders.map(order => {
             const date = order.createdAt
                 ? new Date(order.createdAt).toLocaleString('es-PE')
                 : 'Fecha no disponible';
 
             const itemsHtml = (order.items || []).map(item => {
                 console.log('Pedido:', order.id);
-console.log('Producto completo:', item);
-console.log('ID del producto:', item.id);
+                console.log('Producto completo:', item);
+                console.log('ID del producto:', item.id);
                 const productName = escapeHtml(item.productName || 'Producto');
                 const hasItemId = item.id !== null && item.id !== undefined;
 
@@ -659,7 +677,7 @@ console.log('ID del producto:', item.id);
                     <li class="order-item">
                         <div class="order-item-details">
                             <span>${productName}</span>
-                            <span>× ${Number(item.quantity)} — ${money(item.lineTotal)}</span>
+                            <span>Ã— ${Number(item.quantity)} â€” ${money(item.lineTotal)}</span>
                         </div>
                         ${hasItemId ? `
                             <button class="button secondary claim-product-button"
@@ -670,7 +688,7 @@ console.log('ID del producto:', item.id);
                                 Presentar reclamo
                             </button>
                         ` : `
-                            <p class="message">No se pudo identificar este artículo para reclamar.</p>
+                            <p class="message">No se pudo identificar este artÃ­culo para reclamar.</p>
                         `}
                     </li>
                 `;
@@ -693,7 +711,7 @@ console.log('ID del producto:', item.id);
     } catch (error) {
         showMessage(
             ordersMessageElement,
-            error.message || 'Ocurrió un error al cargar el historial.',
+            error.message || 'OcurriÃ³ un error al cargar el historial.',
             true
         );
     }
@@ -702,7 +720,7 @@ console.log('ID del producto:', item.id);
 function getClaimStatusLabel(status) {
     const labels = {
         PENDING: 'Pendiente',
-        IN_REVIEW: 'En revisión',
+        IN_REVIEW: 'En revisiÃ³n',
         RESOLVED: 'Resuelto',
         REJECTED: 'Rechazado'
     };
@@ -728,11 +746,57 @@ async function loadMyClaims() {
 
         if (!Array.isArray(data) || data.length === 0) {
             claimsListElement.innerHTML = '';
-            showMessage(claimsMessageElement, 'Todavía no has presentado reclamos.');
+            customerClaimNumbers.clear();
+            currentClaimsPage = 1;
+            showMessage(claimsMessageElement, 'TodavÃ­a no has presentado reclamos.');
             return;
         }
 
-        claimsListElement.innerHTML = data.map(claim => {
+        // Ordena los reclamos desde el mÃ¡s antiguo para numerarlos.
+        const chronologicalClaims = [...data].sort((a, b) => {
+            const dateA = new Date(a.createdAt).getTime();
+            const dateB = new Date(b.createdAt).getTime();
+
+            if (dateA !== dateB) return dateA - dateB;
+
+            return Number(a.id) - Number(b.id);
+            });
+
+        // Asigna a cada reclamo un nÃºmero propio del cliente.
+        customerClaimNumbers = new Map(
+                chronologicalClaims.map((claim, index) => [
+                Number(claim.id),
+                index + 1
+                ])
+            );
+
+            // Calcula quÃ© reclamos mostrar en la pÃ¡gina actual.
+            const totalPages = Math.ceil(data.length / CLAIMS_PER_PAGE);
+
+            currentClaimsPage = Math.max(
+                1,
+                Math.min(currentClaimsPage, totalPages)
+            );
+
+            const startIndex = (currentClaimsPage - 1) * CLAIMS_PER_PAGE;
+
+            const visibleClaims = data.slice(
+                startIndex,
+                startIndex + CLAIMS_PER_PAGE
+            );
+
+            // Muestra la paginaciÃ³n solamente cuando hay mÃ¡s de una pÃ¡gina.
+            claimsPaginationElement.hidden = totalPages <= 1;
+
+            // Indica la pÃ¡gina actual y la cantidad de reclamos del cliente.
+            claimsPageInfoElement.textContent =
+            `PÃ¡gina ${currentClaimsPage} de ${totalPages} Â· ${data.length} reclamos`;
+
+            // Habilita o deshabilita los botones segÃºn corresponda.
+            claimsPrevButton.disabled = currentClaimsPage === 1;
+            claimsNextButton.disabled = currentClaimsPage >= totalPages;
+
+        claimsListElement.innerHTML = visibleClaims.map(claim => {
             const date = claim.createdAt
                 ? new Date(claim.createdAt).toLocaleString('es-PE')
                 : 'Fecha no disponible';
@@ -740,7 +804,7 @@ async function loadMyClaims() {
             return `
                 <article class="claim-card">
                     <div class="claim-card-heading">
-                        <strong>Reclamo #${Number(claim.id)}</strong>
+                        <strong>Reclamo #${customerClaimNumbers.get(Number(claim.id))}</strong>
                         <span class="claim-status">${escapeHtml(getClaimStatusLabel(claim.status))}</span>
                     </div>
                     <p><strong>Pedido:</strong> #${orderNumber}</p>
@@ -755,19 +819,19 @@ async function loadMyClaims() {
     } catch (error) {
         showMessage(
             claimsMessageElement,
-            error.message || 'Ocurrió un error al cargar los reclamos.',
+            error.message || 'OcurriÃ³ un error al cargar los reclamos.',
             true
         );
     }
 }
 
-/** Envía un reclamo para un artículo de una compra del cliente. */
+/** EnvÃ­a un reclamo para un artÃ­culo de una compra del cliente. */
 claimFormElement.addEventListener('submit', async event => {
     event.preventDefault();
     if (claimSubmissionInProgress) return;
 
     if (!currentUser || currentUser.role !== 'CUSTOMER') {
-        showMessage(claimFormMessageElement, 'Inicia sesión como cliente para presentar un reclamo.', true);
+        showMessage(claimFormMessageElement, 'Inicia sesiÃ³n como cliente para presentar un reclamo.', true);
         return;
     }
 
@@ -777,11 +841,11 @@ claimFormElement.addEventListener('submit', async event => {
     const description = document.querySelector('#claim-description').value.trim();
 
     if (!Number.isInteger(orderId) || orderId <= 0 || !Number.isInteger(orderItemId) || orderItemId <= 0) {
-        showMessage(claimFormMessageElement, 'Selecciona un artículo de tu historial de compras.', true);
+        showMessage(claimFormMessageElement, 'Selecciona un artÃ­culo de tu historial de compras.', true);
         return;
     }
     if (!reason || !description) {
-        showMessage(claimFormMessageElement, 'Completa el motivo y la descripción del reclamo.', true);
+        showMessage(claimFormMessageElement, 'Completa el motivo y la descripciÃ³n del reclamo.', true);
         return;
     }
 
@@ -800,7 +864,7 @@ claimFormElement.addEventListener('submit', async event => {
             throw new Error(
                 data.message || data.detail ||
                 (response.status === 401
-                    ? 'Tu sesión ha caducado. Inicia sesión nuevamente.'
+                    ? 'Tu sesiÃ³n ha caducado. Inicia sesiÃ³n nuevamente.'
                     : response.status === 403
                         ? 'No tienes permiso para presentar este reclamo.'
                         : 'No se pudo registrar el reclamo.')
@@ -809,12 +873,12 @@ claimFormElement.addEventListener('submit', async event => {
 
         claimFormElement.reset();
         claimSelectedProductElement.textContent = 'Selecciona un producto de tu historial de compras.';
-        showMessage(claimFormMessageElement, `Reclamo #${Number(data.id)} registrado correctamente.`);
+        showMessage(claimFormMessageElement, 'Reclamo registrado correctamente.');
         await loadMyClaims();
     } catch (error) {
         showMessage(
             claimFormMessageElement,
-            error.message || 'Ocurrió un error al enviar el reclamo.',
+            error.message || 'OcurriÃ³ un error al enviar el reclamo.',
             true
         );
     } finally {
@@ -824,13 +888,13 @@ claimFormElement.addEventListener('submit', async event => {
 });
 
 /**
- * Envía la compra al servidor y actualiza el catálogo tras la confirmación.
+ * EnvÃ­a la compra al servidor y actualiza el catÃ¡logo tras la confirmaciÃ³n.
  */
 async function checkout() {
     if (checkoutInProgress) return;
 
     if (!currentUser || currentUser.role !== 'CUSTOMER') {
-        showMessage(cartMessageElement, 'Debes iniciar sesión como cliente.', true);
+        showMessage(cartMessageElement, 'Debes iniciar sesiÃ³n como cliente.', true);
         return;
     }
 
@@ -860,14 +924,14 @@ async function checkout() {
             throw new Error(
                 data.message || data.detail ||
                 (response.status === 401
-                    ? 'Tu sesión ha caducado. Inicia sesión nuevamente.'
+                    ? 'Tu sesiÃ³n ha caducado. Inicia sesiÃ³n nuevamente.'
                     : response.status === 403
                         ? 'No tienes permiso para realizar esta compra.'
                         : 'No se pudo completar la compra.')
             );
         }
 
-        // Vacía el carrito solo cuando el servidor confirma la compra.
+        // VacÃ­a el carrito solo cuando el servidor confirma la compra.
         cart = [];
 
         await loadProducts();
@@ -879,12 +943,12 @@ async function checkout() {
 
         showMessage(
             cartMessageElement,
-            `¡Compra realizada correctamente! Pedido #${customerOrderNumber}.`
+            `Â¡Compra realizada correctamente! Pedido #${customerOrderNumber}.`
         );
     } catch (error) {
         showMessage(
             cartMessageElement,
-            error.message || 'Ocurrió un error al procesar la compra.',
+            error.message || 'OcurriÃ³ un error al procesar la compra.',
             true
         );
     } finally {
@@ -894,7 +958,7 @@ async function checkout() {
 }
 
 /**
- * Busca productos por nombre o categoría.
+ * Busca productos por nombre o categorÃ­a.
  */
 if (productSearchElement) {
     productSearchElement.addEventListener('input', () => {
@@ -903,7 +967,7 @@ if (productSearchElement) {
     });
 }
 /**
- * Filtra el catálogo al seleccionar una categoría.
+ * Filtra el catÃ¡logo al seleccionar una categorÃ­a.
  */
 if (categoryFiltersElement) {
     categoryFiltersElement.addEventListener('click', event => {
@@ -932,7 +996,7 @@ if (categoryFiltersElement) {
 }
 
 /**
- * Cambia de página dentro del catálogo.
+ * Cambia de pÃ¡gina dentro del catÃ¡logo.
  */
 if (catalogPaginationElement) {
     catalogPaginationElement.addEventListener('click', event => {
@@ -978,7 +1042,7 @@ cartItemsElement.addEventListener('change', event => {
     if (!product || !cartItem) return;
 
     if (!Number.isInteger(quantity) || quantity < 1) {
-        showMessage(cartMessageElement, 'La cantidad debe ser un número entero mayor que cero.', true);
+        showMessage(cartMessageElement, 'La cantidad debe ser un nÃºmero entero mayor que cero.', true);
         renderCart();
         return;
     }
@@ -1010,16 +1074,16 @@ cartItemsElement.addEventListener('click', event => {
 });
 
 /**
- * Vacía el carrito sin registrar una compra.
+ * VacÃ­a el carrito sin registrar una compra.
  */
 document.querySelector('#clear-cart-button').addEventListener('click', () => {
     cart = [];
-    showMessage(cartMessageElement, 'El carrito está vacío.');
+    showMessage(cartMessageElement, 'El carrito estÃ¡ vacÃ­o.');
     renderCart();
 });
 
 /**
- * Confirma el pedido cuando el cliente pulsa el botón de compra.
+ * Confirma el pedido cuando el cliente pulsa el botÃ³n de compra.
  */
 checkoutButton.addEventListener('click', checkout);
 
@@ -1028,15 +1092,55 @@ checkoutButton.addEventListener('click', checkout);
  */
 document.querySelector('#refresh-orders-button').addEventListener('click', loadMyOrders);
 
+// Botones de paginaciÃ³n del historial de compras.
+const ordersPaginationElement = document.querySelector('#orders-pagination');
+const ordersPrevButton = document.querySelector('#orders-prev-button');
+const ordersNextButton = document.querySelector('#orders-next-button');
+const ordersPageInfoElement = document.querySelector('#orders-page-info');
+
+// Retrocede una pÃ¡gina.
+ordersPrevButton.addEventListener('click', async () => {
+    if (currentOrdersPage <= 1) return;
+
+    currentOrdersPage--;
+    await loadMyOrders();
+});
+
+// Avanza una pÃ¡gina.
+ordersNextButton.addEventListener('click', async () => {
+    currentOrdersPage++;
+    await loadMyOrders();
+});
+
 document.querySelector('#refresh-claims-button').addEventListener('click', loadMyClaims);
 
-// Permite seleccionar un artículo del historial para completar el formulario de reclamo.
+// Controles de paginaciÃ³n del historial de reclamos.
+const claimsPaginationElement = document.querySelector('#claims-pagination');
+const claimsPrevButton = document.querySelector('#claims-prev-button');
+const claimsNextButton = document.querySelector('#claims-next-button');
+const claimsPageInfoElement = document.querySelector('#claims-page-info');
+
+// Retrocede una pÃ¡gina de reclamos.
+claimsPrevButton.addEventListener('click', async () => {
+    if (currentClaimsPage <= 1) return;
+
+    currentClaimsPage--;
+    await loadMyClaims();
+});
+
+// Avanza una pÃ¡gina de reclamos.
+claimsNextButton.addEventListener('click', async () => {
+    currentClaimsPage++;
+    await loadMyClaims();
+});
+
+// Permite seleccionar un artÃ­culo del historial para completar el formulario de reclamo.
 ordersListElement.addEventListener('click', event => {
     const button = event.target.closest('.claim-product-button');
     if (!button) return;
 
     if (!currentUser || currentUser.role !== 'CUSTOMER') {
-        showMessage(claimFormMessageElement, 'Inicia sesión como cliente para presentar un reclamo.', true);
+        showMessage(claimFormMessageElement, 'Inicia sesiÃ³n como cliente para presentar un reclamo.', true);
         return;
     }
 
@@ -1048,13 +1152,13 @@ ordersListElement.addEventListener('click', event => {
 });
 
 /**
- * Registra una venta y muestra la boleta si el servidor confirma la operación.
+ * Registra una venta y muestra la boleta si el servidor confirma la operaciÃ³n.
  */
 document.querySelector('#sale-form').addEventListener('submit', async event => {
     event.preventDefault();
 
     if (!currentUser || !['MANAGER', 'ADMIN'].includes(currentUser.role)) {
-        showMessage(saleMessageElement, 'Debes iniciar sesión con una cuenta autorizada para registrar ventas.', true);
+        showMessage(saleMessageElement, 'Debes iniciar sesiÃ³n con una cuenta autorizada para registrar ventas.', true);
         return;
     }
 
@@ -1092,7 +1196,7 @@ document.querySelector('#sale-form').addEventListener('submit', async event => {
             throw new Error(
                 data.message || data.detail ||
                 (response.status === 401
-                    ? 'Tu sesión ha caducado. Inicia sesión nuevamente.'
+                    ? 'Tu sesiÃ³n ha caducado. Inicia sesiÃ³n nuevamente.'
                     : response.status === 403
                         ? 'No tienes permisos para registrar ventas.'
                         : 'No se pudo registrar la venta.')
@@ -1109,7 +1213,7 @@ document.querySelector('#sale-form').addEventListener('submit', async event => {
             await showReceipt(data.id);
         }
     } catch (error) {
-        showMessage(saleMessageElement, error.message || 'Ocurrió un error al registrar la venta.', true);
+        showMessage(saleMessageElement, error.message || 'OcurriÃ³ un error al registrar la venta.', true);
     } finally {
         submitButton.disabled = false;
         updateTotal();
@@ -1117,7 +1221,7 @@ document.querySelector('#sale-form').addEventListener('submit', async event => {
 });
 
 /**
- * Cierra la sesión actual enviando el token CSRF requerido por Spring Security.
+ * Cierra la sesiÃ³n actual enviando el token CSRF requerido por Spring Security.
  */
 document.querySelector('#logout-button').addEventListener('click', async () => {
     const logoutButton = document.querySelector('#logout-button');
@@ -1129,12 +1233,12 @@ document.querySelector('#logout-button').addEventListener('click', async () => {
         const response = await apiRequest('/logout', { method: 'POST' });
 
         if (!response.ok) {
-            throw new Error('No se pudo cerrar la sesión.');
+            throw new Error('No se pudo cerrar la sesiÃ³n.');
         }
 
         window.location.assign('/');
     } catch (error) {
-        showMessage(sessionMessage, error.message || 'Ocurrió un error al cerrar la sesión.', true);
+        showMessage(sessionMessage, error.message || 'OcurriÃ³ un error al cerrar la sesiÃ³n.', true);
         logoutButton.disabled = false;
     }
 });
@@ -1146,7 +1250,7 @@ saleProductElement.addEventListener('change', updateTotal);
 saleQuantityElement.addEventListener('input', updateTotal);
 
 /**
- * Recarga el catálogo y, cuando corresponde, las ventas recientes.
+ * Recarga el catÃ¡logo y, cuando corresponde, las ventas recientes.
  */
 document.querySelector('#refresh-button').addEventListener('click', async () => {
     await loadProducts();
@@ -1179,7 +1283,7 @@ async function showReceipt(saleId) {
         document.getElementById('ticketItemTotal').textContent =
             `S/. ${Number(receipt.total).toFixed(2)}`;
 
-        // Calcula el subtotal y el IGV incluido en el total, según la tasa usada por el proyecto.
+        // Calcula el subtotal y el IGV incluido en el total, segÃºn la tasa usada por el proyecto.
         const total = Number(receipt.total);
         const subtotal = total / 1.18;
         const igv = total - subtotal;
@@ -1191,7 +1295,7 @@ async function showReceipt(saleId) {
         document.getElementById('receiptModalBackdrop').style.display = 'flex';
     } catch (error) {
         console.error('Error al cargar la boleta:', error);
-        showMessage(saleMessageElement, error.message || 'Ocurrió un error al cargar la boleta.', true);
+        showMessage(saleMessageElement, error.message || 'OcurriÃ³ un error al cargar la boleta.', true);
     }
 }
 
@@ -1203,14 +1307,14 @@ function closeReceiptModal() {
 }
 
 /**
- * Abre el diálogo de impresión para imprimir la boleta o guardarla como PDF.
+ * Abre el diÃ¡logo de impresiÃ³n para imprimir la boleta o guardarla como PDF.
  */
 function printReceiptTicket() {
     window.print();
 }
 
 /**
- * Inicializa el catálogo y verifica si existe una sesión autenticada.
+ * Inicializa el catÃ¡logo y verifica si existe una sesiÃ³n autenticada.
  */
 async function initializeApp() {
     await loadProducts();
