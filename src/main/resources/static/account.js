@@ -1,4 +1,3 @@
-
 /**
  * Muestra un mensaje de estado para el formulario de registro.
  */
