@@ -9,7 +9,7 @@ const categoryFiltersElement = document.querySelector('#category-filters');
 const catalogResultsElement = document.querySelector('#catalog-results');
 const catalogPaginationElement = document.querySelector('#catalog-pagination');
 
-const PRODUCTS_PER_PAGE = 12;
+const PRODUCTS_PER_PAGE = 6;
 let selectedCategory = 'all';
 let currentCatalogPage = 1;
 
@@ -354,6 +354,29 @@ function escapeHtml(value) {
 }
 
 /**
+ * Muestra la sección elegida y actualiza el estado de las pestañas.
+ */
+function mostrarSeccion(idSeccion, boton) {
+    document.querySelectorAll(
+        '#seccion-catalogo, #seccion-compras, #seccion-reclamos'
+    ).forEach(seccion => {
+        seccion.classList.remove('seccion-activa');
+        seccion.classList.add('seccion-oculta');
+    });
+
+    document.querySelectorAll('#nav-secciones .tab-btn').forEach(tab => {
+        tab.classList.remove('activo');
+        tab.setAttribute('aria-selected', 'false');
+    });
+
+    const seccion = document.getElementById(idSeccion);
+    seccion.classList.remove('seccion-oculta');
+    seccion.classList.add('seccion-activa');
+    boton.classList.add('activo');
+    boton.setAttribute('aria-selected', 'true');
+}
+
+/**
  * Consulta la sesiÃ³n actual y muestra las opciones permitidas para el rol del usuario.
  */
 async function loadCurrentUser() {
@@ -361,6 +384,7 @@ async function loadCurrentUser() {
     const logoutButton = document.querySelector('#logout-button');
     const loginLink = document.querySelector('#login-link');
     const registerLink = document.querySelector('#register-link');
+    const navSecciones = document.querySelector('#nav-secciones');
     const salePanel = document.querySelector('#sale-panel');
     const contentGrid = document.querySelector('#content-grid');
     const saleCount = document.querySelector('#sale-count');
@@ -378,6 +402,8 @@ async function loadCurrentUser() {
             salePanel.hidden = true;
             customerPanel.hidden = true;
             registerLink.hidden = false;
+            loginLink.hidden = false;
+            navSecciones.hidden = true;
             logoutButton.hidden = true;
 
             contentGrid.classList.add('public-mode');
@@ -401,6 +427,7 @@ async function loadCurrentUser() {
         // Actualiza la interfaz para mostrar Ãºnicamente las opciones de la sesiÃ³n activa.
         currentUser = await response.json();
 
+        navSecciones.hidden = false;
         loginLink.hidden = true;
         registerLink.hidden = true;
         logoutButton.hidden = false;
@@ -414,6 +441,8 @@ async function loadCurrentUser() {
         const canManageSales = ['MANAGER', 'ADMIN'].includes(currentUser.role);
         const isCustomer = currentUser.role === 'CUSTOMER';
 
+        document.querySelector('#tab-compras').hidden = !isCustomer;
+        document.querySelector('#tab-reclamos').hidden = !isCustomer;
         salePanel.hidden = !canManageSales;
         customerPanel.hidden = !isCustomer;
         contentGrid.classList.toggle('public-mode', !canManageSales);
@@ -444,6 +473,7 @@ async function loadCurrentUser() {
         customerPanel.hidden = true;
         loginLink.hidden = false;
         registerLink.hidden = false;
+        navSecciones.hidden = true;
         logoutButton.hidden = true;
 
         contentGrid.classList.add('public-mode');
