@@ -1,5 +1,6 @@
 package pe.edu.pe.gestion_caja_web.claim;
 
+import java.security.SecureRandom;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,10 @@ import pe.edu.pe.gestion_caja_web.user.UserRepository;
  */
 @Service
 public class ClaimService {
+        private static final String CODE_CHARACTERS =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+        private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final ClaimRepository claimRepository;
     private final CustomerOrderRepository orderRepository;
@@ -84,8 +89,10 @@ public class ClaimService {
                         HttpStatus.BAD_REQUEST,
                         "El producto indicado no pertenece a ese pedido."));
 
-        Claim claim = new Claim(order, orderItem, reason, description);
-        Claim savedClaim = claimRepository.save(claim);
+                Claim claim = new Claim(order, orderItem, reason, description);
+                claim.setInternalCode(generateInternalCode());
+
+                Claim savedClaim = claimRepository.save(claim);
 
         return toResponse(savedClaim);
     }
@@ -124,7 +131,28 @@ public class ClaimService {
     }
 
     /**
-     * Comprueba si un texto está vacío o contiene únicamente espacios.
+     * Genera un codigo interno de seguimiento para el reclamo.
+     */
+    private String generateInternalCode() {
+        String code;
+
+        do {
+            StringBuilder builder = new StringBuilder("REC-");
+
+            for (int i = 0; i < 6; i++) {
+                int index = SECURE_RANDOM.nextInt(CODE_CHARACTERS.length());
+                builder.append(CODE_CHARACTERS.charAt(index));
+            }
+
+            code = builder.toString();
+
+        } while (claimRepository.existsByInternalCode(code));
+
+        return code;
+    }
+
+    /**
+     * Comprueba si un texto esta vacio.
      */
     private boolean isBlank(String value) {
         return value == null || value.isBlank();

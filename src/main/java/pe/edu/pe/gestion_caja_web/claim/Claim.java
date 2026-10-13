@@ -103,8 +103,23 @@ public class Claim {
     public Long getId() {
         return id;
     }
+    /**
+    * Devuelve el codigo interno de seguimiento del reclamo.
+    */
     public String getInternalCode() {
-    return internalCode;
+        return internalCode;
+    }
+
+/**
+ * Asigna el codigo interno generado por el servidor.
+ */
+    public void setInternalCode(String internalCode) {
+        if (internalCode == null || !internalCode.matches("REC-[A-Z0-9]{6}")) {
+            throw new IllegalArgumentException(
+                "El codigo interno del reclamo no tiene un formato valido.");
+        }
+
+        this.internalCode = internalCode;
     }
 
     public CustomerOrder getOrder() {
