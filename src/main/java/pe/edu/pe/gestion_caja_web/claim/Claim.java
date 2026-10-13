@@ -30,6 +30,12 @@ public class Claim {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+    * Código interno del reclamo, visible solo para MANAGER y ADMIN.
+    */
+    @Column(name = "internal_code", length = 20, unique = true)
+    private String internalCode;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id", nullable = false)
     private CustomerOrder order;
@@ -96,6 +102,9 @@ public class Claim {
 
     public Long getId() {
         return id;
+    }
+    public String getInternalCode() {
+    return internalCode;
     }
 
     public CustomerOrder getOrder() {
