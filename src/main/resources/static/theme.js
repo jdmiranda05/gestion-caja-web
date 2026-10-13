@@ -9,8 +9,8 @@
         document.documentElement.dataset.theme = theme;
 
         document.querySelectorAll('[data-theme-toggle]').forEach(button => {
-            button.textContent =
-                theme === 'dark' ? 'Usar tema claro' : 'Usar tema oscuro';
+            // Asigna el icono de sol o luna
+            button.textContent = theme === 'dark' ? '☀️' : '🌙';
 
             button.setAttribute(
                 'aria-label',
