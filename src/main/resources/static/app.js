@@ -388,7 +388,7 @@ async function loadCurrentUser() {
 
             showMessage(
                 sessionMessage,
-                'Bienvenido. Inicia sesiÃ³n o crea una cuenta para continuar.'
+                'Bienvenido. Inicia sesion o crea una cuenta para continuar.'
             );
 
             return;
@@ -407,7 +407,7 @@ async function loadCurrentUser() {
 
         showMessage(
             sessionMessage,
-            `Hola, ${currentUser.username}. Tu sesiÃ³n estÃ¡ activa.`
+            `Hola, ${currentUser.username}. Tu sesion esta activa.`
         );
 
         // Identifica los permisos y muestra los paneles correspondientes al rol.
