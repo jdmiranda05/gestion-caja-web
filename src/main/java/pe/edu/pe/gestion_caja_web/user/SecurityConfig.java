@@ -85,17 +85,29 @@ public AuthenticationManager authenticationManager(
                 .requestMatchers("/api/sales/**")
                     .hasAnyRole("MANAGER", "ADMIN")
 
-                                // Permite registrar reclamos Ãºnicamente a los clientes.
-                .requestMatchers(HttpMethod.POST, "/api/claims")
-                    .hasRole("CUSTOMER")
+                // Los clientes pueden registrar y consultar sus propios reclamos.
+.requestMatchers(HttpMethod.POST, "/api/claims").hasRole("CUSTOMER")
+.requestMatchers(HttpMethod.GET, "/api/claims/my-claims").hasRole("CUSTOMER")
 
-                // Permite consultar los reclamos propios del cliente.
-                .requestMatchers(HttpMethod.GET, "/api/claims/my-claims")
-                    .hasRole("CUSTOMER")
+// El personal autorizado puede consultar y gestionar reclamos.
+.requestMatchers("/api/claims/staff", "/api/claims/staff/**")
+    .hasAnyRole("MANAGER", "ADMIN")
 
-                // Reserva la consulta general de reclamos al personal autorizado.
-                .requestMatchers(HttpMethod.GET, "/api/claims")
-                    .hasAnyRole("MANAGER", "ADMIN")
+// Compatibilidad con la consulta administrativa existente.
+.requestMatchers(HttpMethod.GET, "/api/claims")
+    .hasAnyRole("MANAGER", "ADMIN")
+
+// Cualquier otra ruta de reclamos queda bloqueada.
+.requestMatchers("/api/claims", "/api/claims/**")
+    .denyAll()
+
+                // Reserva la gestion administrativa de usuarios al administrador.
+                .requestMatchers("/api/admin/**")
+                    .hasRole("ADMIN")
+
+                // Reserva las operaciones propias del gerente.
+                .requestMatchers("/api/manager/**")
+                    .hasRole("MANAGER")
 
                 // Limita las compras al rol de cliente.
                 .requestMatchers("/api/purchases/**")

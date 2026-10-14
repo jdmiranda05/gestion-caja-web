@@ -149,6 +149,29 @@ public class Claim {
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
+    /**
+ * Identificador del usuario que atendio el reclamo.
+ */
+@Column(name = "reviewed_by_user_id")
+private Long reviewedByUserId;
+
+/**
+ * Fecha en que comenzo la revision.
+ */
+@Column(name = "reviewed_at")
+private LocalDateTime reviewedAt;
+
+/**
+ * Respuesta del personal al cliente.
+ */
+@Column(name = "staff_response", length = 2000)
+private String staffResponse;
+
+/**
+ * Fecha en que se registro la respuesta.
+ */
+@Column(name = "responded_at")
+private LocalDateTime respondedAt;
 
     /**
      * Permite actualizar el estado desde la lógica interna del servidor.
@@ -156,4 +179,37 @@ public class Claim {
     public void setStatus(ClaimStatus status) {
         this.status = status;
     }
+    public Long getReviewedByUserId() {
+    return reviewedByUserId;
+}
+
+public LocalDateTime getReviewedAt() {
+    return reviewedAt;
+}
+
+public String getStaffResponse() {
+    return staffResponse;
+}
+
+public LocalDateTime getRespondedAt() {
+    return respondedAt;
+}
+
+/**
+ * Registra el inicio de la revision.
+ */
+public void startReview(Long reviewerId) {
+    this.reviewedByUserId = reviewerId;
+    this.reviewedAt = LocalDateTime.now();
+    this.status = ClaimStatus.IN_REVIEW;
+}
+
+/**
+ * Registra la respuesta final del personal.
+ */
+public void respond(String response, ClaimStatus finalStatus) {
+    this.staffResponse = response;
+    this.respondedAt = LocalDateTime.now();
+    this.status = finalStatus;
+}
 }
