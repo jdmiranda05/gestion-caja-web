@@ -48,9 +48,21 @@ Su desarrollo y validación integral forman parte de las siguientes etapas del p
 
 ### ADMIN (Administrador)
 
-Rol destinado a las funciones administrativas del sistema.
+Rol encargado de la administración de usuarios y de las operaciones autorizadas del sistema.
 
-Su desarrollo y validación integral forman parte de las siguientes etapas del proyecto.
+Funcionalidades implementadas en el backend:
+
+- Consulta de usuarios y administración de roles.
+- Solicitud de desactivación de cuentas.
+- Aprobación y rechazo de solicitudes por MANAGER o ADMIN.
+- Separación entre quien solicita y quien aprueba.
+- Ejecución de desactivaciones aprobadas exclusivamente por ADMIN.
+- Protección contra la desactivación de la propia cuenta.
+- Protección del último administrador activo.
+- Registro de auditoría de las decisiones y ejecuciones.
+- Control de operaciones concurrentes mediante bloqueos transaccionales.
+
+La interfaz gráfica administrativa y su validación integral siguen pendientes.
 
 ## 3. Seguridad
 
@@ -185,16 +197,93 @@ La prueba de reclamo con JSON vacío no demuestra por sí sola que toda la prote
 - Funcionalidades principales de CUSTOMER.
 - Historial de compras y reclamos.
 - Pruebas automatizadas iniciales.
+- Backend de administración de usuarios y roles.
+- Flujo de solicitudes, aprobaciones y desactivaciones.
+- Auditoría de operaciones administrativas.
+- Pruebas automatizadas de seguridad y concurrencia ADMIN.
 
 ### Pendiente
 
 - Desarrollo y validación integral de MANAGER.
-- Desarrollo y validación integral de ADMIN.
+- Desarrollo y validación de la interfaz gráfica ADMIN.
 - Ampliación de pruebas automatizadas de compras y reclamos.
 - Revisión adicional de CSRF en operaciones JWT.
 - Configuración de seguridad para producción.
 
-## 9. Control de versiones
+## 9. Administración de usuarios y desactivaciones
+
+El backend implementa un flujo controlado para desactivar cuentas de usuario.
+
+### Permisos
+
+| Operación | CUSTOMER | MANAGER | ADMIN |
+|---|---|---|---|
+| Solicitar desactivación | No | No | Sí |
+| Consultar solicitudes | No | Sí | Sí |
+| Aprobar o rechazar | No | Sí | Sí |
+| Ejecutar desactivación | No | No | Sí |
+| Consultar auditoría | No | Sí | Sí |
+
+### Endpoints administrativos
+
+| Método | Ruta | Acceso |
+|---|---|---|
+| POST | `/api/admin/users/deactivation-requests` | ADMIN |
+| POST | `/api/admin/users/deactivation-requests/{id}/execute` | ADMIN |
+| GET | `/api/approvals/deactivation-requests` | MANAGER, ADMIN |
+| GET | `/api/approvals/deactivation-requests/{id}/history` | MANAGER, ADMIN |
+| POST | `/api/approvals/deactivation-requests/{id}/approve` | MANAGER, ADMIN |
+| POST | `/api/approvals/deactivation-requests/{id}/reject` | MANAGER, ADMIN |
+
+### Flujo de desactivación
+
+1. Un ADMIN solicita la desactivación de una cuenta.
+2. La solicitud se registra como `PENDING`.
+3. Otro usuario autorizado, MANAGER o ADMIN, la aprueba o rechaza.
+4. Si se aprueba, la solicitud pasa a `APPROVED`.
+5. Un ADMIN ejecuta la desactivación.
+6. La cuenta queda inactiva y la solicitud pasa a `EXECUTED`.
+7. Las decisiones y ejecuciones se registran en la auditoría.
+
+Una solicitud rechazada pasa a `REJECTED` y no puede ejecutarse.
+
+### Protecciones implementadas
+
+- Solo se ejecutan solicitudes aprobadas.
+- Se impide la desactivación de la propia cuenta.
+- Se protege al último administrador activo.
+- Se impide ejecutar dos veces la misma solicitud.
+- Se comprueba que los usuarios autorizados estén activos.
+- Se utilizan bloqueos transaccionales para coordinar las ejecuciones.
+
+### Persistencia
+
+Las migraciones Flyway incorporan:
+
+- El campo `active` de los usuarios.
+- Las tablas de solicitudes y auditoría.
+- La tabla de bloqueo para coordinar desactivaciones.
+
+### Pruebas del bloque ADMIN
+
+Se implementaron pruebas de servicios, seguridad de endpoints, protección del último administrador y concurrencia.
+
+La prueba de concurrencia comprueba dos intentos simultáneos de ejecutar una misma solicitud.
+
+Última ejecución completa verificada: 14 de octubre de 2026.
+
+- Pruebas ejecutadas: 59
+- Fallos: 0
+- Errores: 0
+- Omitidas: 0
+- Resultado: BUILD SUCCESS
+
+Para ejecutar las pruebas:
+
+    .\mvnw.cmd clean test
+
+---
+## 10. Control de versiones
 
 El proyecto utiliza Git y GitHub.
 
@@ -219,8 +308,8 @@ No deben subirse al repositorio:
 
 ### Cuentas de demostración
 
-Al iniciar, la aplicación crea (si no existen) las cuentas `gerente` (MANAGER) y `admin` (ADMIN).
-La contraseña se define en `app.seed.staff-password` (`application.properties`); si se deja vacía no se crean.
+Al iniciar, la aplicación puede crear (si no existen) las cuentas `gerente` (MANAGER) y `admin` (ADMIN), siempre que se configure una contraseña de demostración.
+La contraseña se obtiene de la propiedad `app.seed.staff-password`. Actualmente no está definida en `application.properties`, por lo que las cuentas no se crean automáticamente salvo que se proporcione un valor.
 Las cuentas CUSTOMER se crean desde la pantalla de registro.
 
 ### Flujo JWT en el navegador

@@ -228,7 +228,7 @@ class AdminUserServiceTest {
     }
 
     @Test
-    void noPuedeDesactivarAlUltimoAdmin() {
+    void adminInactivoNoPuedeEjecutarDesactivacion() {
 
         User adminA = createUser("admin_last_a_test", Role.ADMIN);
         User adminB = createUser("admin_last_b_test", Role.ADMIN);
@@ -318,7 +318,7 @@ class AdminUserServiceTest {
     }
 
     @Test
-    void noPermiteDesactivarAlUltimoAdminActivo() {
+    void ejecutorInactivoNoPuedeDesactivarAdminActivo() {
 
         String adminPrincipal =
                 "admin-principal-" + java.util.UUID.randomUUID();
