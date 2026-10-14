@@ -196,8 +196,21 @@
 
 <!-- Gestión de productos, reportes y usuarios para gerente y administrador. -->
 <div id="seccion-gestion" class="seccion-oculta">
-    <section class="panel">
-        <p class="eyebrow">CRUD DE PRODUCTOS</p>
+    <nav class="secciones-nav" id="gestion-nav" aria-label="Apartados de gestión">
+    <button class="tab-btn activo" type="button"
+            data-gestion-tab="productos">Productos</button>
+
+    <button class="tab-btn" type="button"
+            data-gestion-tab="inventario">Inventario</button>
+
+    <button class="tab-btn" type="button"
+            data-gestion-tab="reclamos">Reclamos</button>
+
+    <button class="tab-btn" type="button"
+            data-gestion-tab="reportes">Reportes</button>
+</nav>
+    <section class="panel" data-gestion-panel="productos">
+    <p class="eyebrow">CRUD DE PRODUCTOS</p>
         <h2 id="product-form-title">Nuevo producto</h2>
 
         <form id="product-form">
@@ -220,12 +233,98 @@
             </button>
         </form>
         <p id="product-form-message" class="message" role="status" aria-live="polite"></p>
+        <div class="catalog-toolbar">
+    <label class="catalog-search" for="manage-products-search">
+        Buscar productos
+        <input
+            id="manage-products-search"
+            type="search"
+            placeholder="Nombre, categoría o ID..."
+            autocomplete="off">
+    </label>
+</div>
 
         <div id="manage-products" class="product-list"></div>
+
+        <div id="manage-products-pagination" class="catalog-pagination" hidden>
+    <button class="button secondary"
+            id="manage-products-prev"
+            type="button">
+        Anterior
+    </button>
+
+    <span id="manage-products-page-info"></span>
+
+    <button class="button secondary"
+            id="manage-products-next"
+            type="button">
+        Siguiente
+    </button>
+</div>
+<!-- HISTORIAL DE PRODUCTOS RETIRADOS -->
+<section id="inactive-products-panel" class="panel">
+    <h2>Productos retirados</h2>
+
+    <p class="muted-text">
+        Consulta los productos retirados del catálogo
+        y restaura aquellos que deseas volver a vender.
+    </p>
+
+    <div class="catalog-toolbar">
+        <label class="catalog-search" for="inactive-products-search">
+            Buscar productos retirados
+            <input
+                id="inactive-products-search"
+                type="search"
+                placeholder="Nombre, categoría o ID..."
+                autocomplete="off"
+            >
+        </label>
+
+        <button
+            class="button secondary"
+            id="inactive-products-refresh"
+            type="button">
+            Actualizar historial
+        </button>
+    </div>
+
+    <div id="inactive-products-list" class="product-list">
+        <p class="muted-text">
+            Cargando productos retirados...
+        </p>
+    </div>
+
+    <div id="inactive-products-pagination"
+         class="catalog-pagination"
+         hidden>
+
+        <button
+            class="button secondary"
+            id="inactive-products-prev"
+            type="button">
+            Anterior
+        </button>
+
+        <span id="inactive-products-page-info"></span>
+
+        <button
+            class="button secondary"
+            id="inactive-products-next"
+            type="button">
+            Siguiente
+        </button>
+    </div>
+
+    <p id="inactive-products-message"
+       class="message"
+       role="status"
+       aria-live="polite"></p>
+</section>
     </section>
 
-    <section class="panel">
-        <p class="eyebrow">CONSULTAS JPQL</p>
+    <section class="panel" data-gestion-panel="inventario">
+    <p class="eyebrow">CONSULTAS JPQL</p>
         <h2>Stock bajo (10 unidades o menos)</h2>
         <div id="low-stock-list" class="product-list"></div>
 
@@ -233,6 +332,71 @@
         <div id="sales-summary" class="product-list"></div>
         <p id="management-message" class="message" role="status" aria-live="polite"></p>
     </section>
+    <!-- Atención de reclamos para GERENCIA y ADMIN -->
+<section class="panel" id="staff-claims-panel" data-gestion-panel="reclamos">
+    <p class="eyebrow">ATENCIÓN AL CLIENTE</p>
+    <h2>Atención de reclamos</h2>
+
+    <p class="muted-text">
+        Consulta los reclamos de los clientes, inicia su revisión
+        y registra una respuesta para resolverlos o rechazarlos.
+    </p>
+
+    <label for="staff-claims-filter">
+        Filtrar por estado
+        <select id="staff-claims-filter">
+            <option value="">Todos los reclamos</option>
+            <option value="PENDING">Pendientes</option>
+            <option value="IN_REVIEW">En revisión</option>
+            <option value="RESOLVED">Resueltos</option>
+            <option value="REJECTED">Rechazados</option>
+        </select>
+    </label>
+
+    <button
+        class="button secondary"
+        id="staff-claims-refresh"
+        type="button">
+        Actualizar reclamos
+    </button>
+
+    <p
+        id="staff-claims-message"
+        class="message"
+        role="status"
+        aria-live="polite">
+    </p>
+    <div class="catalog-toolbar">
+    <label class="catalog-search" for="staff-claims-search">
+        Buscar reclamos
+        <input
+            id="staff-claims-search"
+            type="search"
+            placeholder="Código, pedido, producto o motivo..."
+            autocomplete="off">
+    </label>
+</div>
+
+    <div
+        id="staff-claims-list"
+        class="product-list">
+    </div>
+    <div id="staff-claims-pagination" class="catalog-pagination" hidden>
+    <button class="button secondary"
+            id="staff-claims-prev"
+            type="button">
+        Anterior
+    </button>
+
+    <span id="staff-claims-page-info"></span>
+
+    <button class="button secondary"
+            id="staff-claims-next"
+            type="button">
+        Siguiente
+    </button>
+</div>
+</section>
 
     <section class="panel" id="users-panel" hidden>
         <p class="eyebrow">SOLO ADMINISTRADOR</p>

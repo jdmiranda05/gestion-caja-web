@@ -21,6 +21,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      * Lista los productos activos ordenados alfabéticamente por nombre.
      */
     List<Product> findByActiveTrueOrderByNameAsc();
+    /**
+    * Lista los productos retirados del catálogo.
+    */
+    List<Product> findByActiveFalseOrderByNameAsc();
 
     /**
      * Busca un producto y bloquea su fila mientras se procesa la transacción.

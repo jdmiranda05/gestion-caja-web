@@ -71,6 +71,9 @@ public AuthenticationManager authenticationManager(
 
                 // Permite la consola H2 durante el desarrollo.
                 .requestMatchers("/h2-console/**").permitAll()
+                // Solo GERENCIA y ADMIN pueden consultar productos retirados.
+                .requestMatchers(HttpMethod.GET, "/api/products/inactive")
+                .hasAnyRole("MANAGER", "ADMIN")
 
                 // Restringe la administraciÃ³n de productos al personal autorizado.
                 .requestMatchers(HttpMethod.POST, "/api/products")

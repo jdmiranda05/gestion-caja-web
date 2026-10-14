@@ -1504,3 +1504,23 @@ select:focus {
         order: -1;
     }
 }
+
+/* Respuesta de gerencia en los reclamos del cliente */
+.claim-staff-response {
+    margin-top: 14px;
+    padding: 16px;
+    border: 1px solid var(--border-color, #d1d5db);
+    border-left: 4px solid #3b82f6;
+    border-radius: 10px;
+    background: rgba(59, 130, 246, 0.06);
+}
+
+.claim-staff-response p {
+    margin: 6px 0;
+}
+
+.claim-staff-response .claim-description {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.6;
+}
