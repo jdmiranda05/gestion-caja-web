@@ -842,8 +842,40 @@ async function loadMyClaims() {
                     <p><strong>Pedido:</strong> #${orderNumber}</p>
                     <p><strong>Producto:</strong> ${escapeHtml(claim.productName || 'Producto')}</p>
                     <p><strong>Motivo:</strong> ${escapeHtml(claim.reason || '')}</p>
-                    <p class="claim-description">${escapeHtml(claim.description || '')}</p>
-                    <p class="claim-date"><strong>Fecha:</strong> ${escapeHtml(date)}</p>
+                    <p class="claim-description">
+    ${escapeHtml(claim.description || '')}
+</p>
+
+${claim.staffResponse ? `
+    <div class="claim-staff-response">
+        <p><strong>Respuesta de atención al cliente:</strong></p>
+
+        <p class="claim-description">
+            ${escapeHtml(claim.staffResponse)}
+        </p>
+
+        ${claim.respondedAt ? `
+            <p class="claim-date">
+                <strong>Respondido el:</strong>
+                ${escapeHtml(
+                    new Date(claim.respondedAt).toLocaleString('es-PE')
+                )}
+            </p>
+        ` : ''}
+    </div>
+` : `
+    <p class="muted-text">
+        ${claim.status === 'IN_REVIEW'
+            ? 'Tu reclamo está siendo revisado por nuestro equipo.'
+            : claim.status === 'PENDING'
+                ? 'Tu reclamo está pendiente de atención.'
+                : 'Todavía no hay una respuesta disponible.'}
+    </p>
+`}
+
+<p class="claim-date">
+    <strong>Fecha:</strong> ${escapeHtml(date)}
+</p>
                 </article>
             `;
         }).join('');

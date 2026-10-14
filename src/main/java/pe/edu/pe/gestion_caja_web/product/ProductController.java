@@ -25,9 +25,25 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping
+        @GetMapping
     public List<Product> list() {
         return productService.findForSale();
+    }
+
+    /**
+     * Consulta los productos retirados.
+     */
+    @GetMapping("/inactive")
+    public List<Product> inactive() {
+        return productService.findInactive();
+    }
+
+    /**
+     * Restaura un producto retirado.
+     */
+    @PatchMapping("/{id}/restore")
+    public Product restore(@PathVariable Long id) {
+        return productService.restore(id);
     }
 
     @GetMapping("/search")

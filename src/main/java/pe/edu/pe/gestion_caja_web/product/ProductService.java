@@ -19,6 +19,36 @@ public class ProductService {
     public List<Product> findForSale() {
         return productRepository.findByActiveTrueOrderByNameAsc();
     }
+    /**
+ * Consulta los productos retirados.
+ */
+@Transactional(readOnly = true)
+public List<Product> findInactive() {
+    return productRepository.findByActiveFalseOrderByNameAsc();
+}
+
+/**
+ * Restaura un producto retirado sin crear un registro nuevo.
+ */
+@Transactional
+public Product restore(Long id) {
+    Product product = productRepository.findByIdForUpdate(id)
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Producto no encontrado"
+            ));
+
+    if (Boolean.TRUE.equals(product.getActive())) {
+        throw new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "El producto ya se encuentra activo"
+        );
+    }
+
+    product.setActive(true);
+
+    return productRepository.save(product);
+}
 
     @Transactional
     public Product create(ProductRequest request) {
