@@ -33,7 +33,19 @@ class RoleAndJwtIntegrationTest {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     private String bearer(String username, Role role) {
+        if (userRepository.findByUsername(username).isEmpty()) {
+            userRepository.saveAndFlush(new User(
+                    username,
+                    username + "@example.com",
+                    "Password123!",
+                    role
+            ));
+        }
+
         return "Bearer " + jwtService.generateToken(username, role);
     }
 

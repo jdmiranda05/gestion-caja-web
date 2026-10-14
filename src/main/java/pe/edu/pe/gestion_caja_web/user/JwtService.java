@@ -77,7 +77,7 @@ public class JwtService {
      * Configura el decodificador que validara los JWT recibidos.
      */
     @Bean
-    public JwtDecoder jwtDecoder(
+    public JwtDecoder jwtDecoder(UserRepository userRepository,
             @Value("${app.jwt.secret}") String secret) {
 
         byte[] keyBytes = Base64.getDecoder().decode(secret);
@@ -89,7 +89,42 @@ public class JwtService {
                 .macAlgorithm(MacAlgorithm.HS256)
                 .build();
 
-        decoder.setJwtValidator(JwtValidators.createDefault());
+        decoder.setJwtValidator(
+                new org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator<>(
+                        JwtValidators.createDefault(),
+                        jwt -> {
+                            String username = jwt.getSubject();
+
+                            if (username == null || username.isBlank()) {
+                                return org.springframework.security.oauth2.core.OAuth2TokenValidatorResult.failure(
+                                        new org.springframework.security.oauth2.core.OAuth2Error(
+                                                "invalid_token",
+                                                "El token no identifica a un usuario.",
+                                                null
+                                        )
+                                );
+                            }
+
+                            User user = userRepository.findByUsername(username)
+                                    .orElse(null);
+
+                            if (user == null || !user.isActive()
+                                    || !user.getRole().name().equals(
+                                            jwt.getClaimAsString("role"))) {
+
+                                return org.springframework.security.oauth2.core.OAuth2TokenValidatorResult.failure(
+                                        new org.springframework.security.oauth2.core.OAuth2Error(
+                                                "invalid_token",
+                                                "La cuenta esta desactivada o sus permisos cambiaron.",
+                                                null
+                                        )
+                                );
+                            }
+
+                            return org.springframework.security.oauth2.core.OAuth2TokenValidatorResult.success();
+                        }
+                )
+        );
 
         return decoder;
     }

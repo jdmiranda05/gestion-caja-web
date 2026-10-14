@@ -27,6 +27,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+    private boolean active = true;
 
     public User() {
     }
@@ -73,4 +74,11 @@ public class User {
     public void setRole(Role role) {
         this.role = role;
     }
+    public boolean isActive() {
+    return active;
+}
+
+public void setActive(boolean active) {
+    this.active = active;
+}
 }

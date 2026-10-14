@@ -14,5 +14,7 @@ public record ClaimResponse(
         String description,
         ClaimStatus status,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt) {
+        LocalDateTime updatedAt,
+        String staffResponse,
+        LocalDateTime respondedAt) {
 }

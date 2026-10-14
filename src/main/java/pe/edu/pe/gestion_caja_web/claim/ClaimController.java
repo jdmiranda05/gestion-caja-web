@@ -45,4 +45,48 @@ public class ClaimController {
     public List<ClaimResponse> findMyClaims(Authentication authentication) {
         return claimService.findMyClaims(authentication.getName());
     }
+    /**
+ * Permite al personal consultar reclamos y filtrarlos por estado.
+ */
+@GetMapping("/staff")
+public List<StaffClaimResponse> findAllForStaff(
+        @org.springframework.web.bind.annotation.RequestParam(required = false)
+        ClaimStatus status) {
+
+    return claimService.findAllForStaff(status);
+}
+/**
+ * Permite al personal autorizado iniciar la revision de un reclamo.
+ */
+@PostMapping("/staff/{claimId}/review")
+public StaffClaimResponse startReview(
+        @org.springframework.web.bind.annotation.PathVariable Long claimId,
+        Authentication authentication) {
+
+    return claimService.startReview(claimId, authentication.getName());
+}
+/**
+ * Permite al personal resolver o rechazar un reclamo en revision.
+ */
+@PostMapping("/staff/{claimId}/resolve")
+public StaffClaimResponse resolveClaim(
+        @org.springframework.web.bind.annotation.PathVariable Long claimId,
+        @RequestBody ClaimResolutionRequest request,
+        Authentication authentication) {
+
+    return claimService.resolveClaim(
+            claimId,
+            authentication.getName(),
+            request);
+}
+/**
+ * Consulta el historial de auditoria de un reclamo.
+ * Disponible para MANAGER y ADMIN.
+ */
+@GetMapping("/staff/{claimId}/history")
+public List<ClaimAuditResponse> findClaimHistory(
+        @org.springframework.web.bind.annotation.PathVariable Long claimId) {
+
+    return claimService.findClaimHistory(claimId);
+}
 }

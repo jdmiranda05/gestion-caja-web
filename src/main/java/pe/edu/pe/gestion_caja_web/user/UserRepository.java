@@ -3,24 +3,29 @@ package pe.edu.pe.gestion_caja_web.user;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-/**
- * Provides database access operations for users.
- */
+import jakarta.persistence.LockModeType;
+
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    /**
-     * Finds a user by username.
-     */
     Optional<User> findByUsername(String username);
 
-    /**
-     * Checks whether a username already exists.
-     */
     boolean existsByUsername(String username);
 
-    /**
-     * Checks whether an email already exists.
-     */
     boolean existsByEmail(String email);
+
+    /**
+     * Cuenta los administradores activos.
+     */
+    long countByRoleAndActiveTrue(Role role);
+
+    /**
+     * Bloquea un usuario durante una transaccion.
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT u FROM User u WHERE u.id = :id")
+    Optional<User> findByIdForUpdate(@Param("id") Long id);
 }
