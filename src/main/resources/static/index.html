@@ -28,10 +28,6 @@
             Crear cuenta
         </a>
 
-        <button class="button theme-toggle" type="button" data-theme-toggle>
-            Cambiar tema
-        </button>
-
         <div id="session-info" class="session-info topbar-session" aria-live="polite">
             <p id="session-message" class="session-message">
                 Comprobando tu sesión...
@@ -39,6 +35,10 @@
             <button id="logout-button" class="button logout-button"
                     type="button" hidden>
                 Cerrar sesión
+            </button>
+            <button class="button theme-toggle btn-icono" type="button"
+                    data-theme-toggle aria-label="Cambiar tema">
+                🌙
             </button>
         </div>
 
@@ -64,6 +64,30 @@
         <article><span>Ventas recientes</span><strong id="sale-count">—</strong></article>
     </section>
 
+    <nav id="nav-secciones" class="secciones-nav" aria-label="Secciones de la tienda" hidden>
+        <button class="tab-btn activo" type="button" role="tab"
+                aria-controls="seccion-catalogo" aria-selected="true"
+                onclick="mostrarSeccion('seccion-catalogo', this)">
+            Catálogo
+        </button>
+        <button id="tab-gestion" class="tab-btn" type="button" role="tab"
+                aria-controls="seccion-gestion" aria-selected="false"
+                onclick="mostrarSeccion('seccion-gestion', this)" hidden>
+            Gestión
+        </button>
+        <button id="tab-compras" class="tab-btn" type="button" role="tab"
+                aria-controls="seccion-compras" aria-selected="false"
+                onclick="mostrarSeccion('seccion-compras', this)">
+            Mis Compras
+        </button>
+        <button id="tab-reclamos" class="tab-btn" type="button" role="tab"
+                aria-controls="seccion-reclamos" aria-selected="false"
+                onclick="mostrarSeccion('seccion-reclamos', this)">
+            Mis Reclamos
+        </button>
+    </nav>
+
+    <div id="seccion-catalogo" class="seccion-activa">
     <div class="content-grid" id="content-grid">
         <section class="panel">
             <div class="panel-heading">
@@ -168,10 +192,59 @@
             <p id="sale-message" class="message" role="status" aria-live="polite"></p>
         </section>
     </div>
+    </div>
 
+<!-- Gestión de productos, reportes y usuarios para gerente y administrador. -->
+<div id="seccion-gestion" class="seccion-oculta">
+    <section class="panel">
+        <p class="eyebrow">CRUD DE PRODUCTOS</p>
+        <h2 id="product-form-title">Nuevo producto</h2>
+
+        <form id="product-form">
+            <input id="product-id" type="hidden">
+            <label for="product-name">Nombre
+                <input id="product-name" type="text" maxlength="120" required>
+            </label>
+            <label for="product-category">Categoría
+                <input id="product-category" type="text" maxlength="60">
+            </label>
+            <label for="product-price">Precio
+                <input id="product-price" type="number" min="0" step="0.01" required>
+            </label>
+            <label for="product-stock">Stock
+                <input id="product-stock" type="number" min="0" step="1" required>
+            </label>
+            <button class="button primary" type="submit">Guardar producto</button>
+            <button id="product-cancel" class="button secondary" type="button" hidden>
+                Cancelar edición
+            </button>
+        </form>
+        <p id="product-form-message" class="message" role="status" aria-live="polite"></p>
+
+        <div id="manage-products" class="product-list"></div>
+    </section>
+
+    <section class="panel">
+        <p class="eyebrow">CONSULTAS JPQL</p>
+        <h2>Stock bajo (10 unidades o menos)</h2>
+        <div id="low-stock-list" class="product-list"></div>
+
+        <h2>Ventas acumuladas por producto</h2>
+        <div id="sales-summary" class="product-list"></div>
+        <p id="management-message" class="message" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="panel" id="users-panel" hidden>
+        <p class="eyebrow">SOLO ADMINISTRADOR</p>
+        <h2>Usuarios y roles</h2>
+        <div id="users-list" class="product-list"></div>
+        <p id="users-message" class="message" role="status" aria-live="polite"></p>
+    </section>
+</div>
 
 <!-- Panel de compras disponible para clientes autenticados. -->
 <section class="panel customer-panel" id="customer-panel" hidden>
+    <div id="seccion-compras" class="seccion-oculta">
     <div class="panel-heading">
         <div>
             <p class="eyebrow">MI COMPRA</p>
@@ -248,7 +321,9 @@
         aria-live="polite">
     </p>
     </div>
+    </div>
     <!-- Sección para registrar y consultar reclamos -->
+    <div id="seccion-reclamos" class="seccion-oculta">
         <div class="claims-section">
             <div class="panel-heading">
                 <div>
@@ -336,6 +411,7 @@
 <p id="claims-message" class="message" role="status" aria-live="polite"></p>
     </div>
 </div>
+</div>
 </section>
 </main>
 
@@ -391,7 +467,9 @@
     </div>
 </div>
 
+<script src="/jwt.js"></script>
 <script src="/app.js"></script>
+<script src="/gestion.js"></script>
 <script src="/theme.js"></script>
 </body>
 </html>

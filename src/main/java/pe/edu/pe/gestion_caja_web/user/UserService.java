@@ -1,6 +1,10 @@
 package pe.edu.pe.gestion_caja_web.user;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,5 +66,34 @@ public class UserService {
         );
 
         return userRepository.save(user);
+    }
+
+    /**
+     * Lista todos los usuarios sin exponer sus contraseñas.
+     */
+    public List<UserResponse> findAll() {
+        return userRepository.findAll().stream().map(UserResponse::from).toList();
+    }
+
+    /**
+     * Cambia el rol de un usuario existente.
+     */
+    @Transactional
+    public UserResponse changeRole(Long id, Role role, String currentUsername) {
+        if (role == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El rol es obligatorio.");
+        }
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Usuario no encontrado."));
+
+        if (user.getUsername().equals(currentUsername)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, "No puedes cambiar tu propio rol.");
+        }
+
+        user.setRole(role);
+        return UserResponse.from(userRepository.save(user));
     }
 }

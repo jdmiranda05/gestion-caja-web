@@ -43,6 +43,10 @@ public class SaleService {
                 total, request.customerName()));
     }
 
+    public List<SaleSummary> summary() {
+        return saleRepository.summarizeByProduct();
+    }
+
     public List<Sale> recent() {
         return saleRepository.findTop20ByOrderBySoldAtDesc();
     }

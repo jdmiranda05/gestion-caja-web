@@ -6,7 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -26,6 +28,23 @@ public class ProductController {
     @GetMapping
     public List<Product> list() {
         return productService.findForSale();
+    }
+
+    @GetMapping("/search")
+    public List<Product> search(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) String category) {
+        return productService.search(q, category);
+    }
+
+    @GetMapping("/low-stock")
+    public List<Product> lowStock(@RequestParam(required = false) Integer limit) {
+        return productService.lowStock(limit);
+    }
+
+    @PatchMapping("/{id}/stock")
+    public Product restock(@PathVariable Long id, @RequestBody StockRequest request) {
+        return productService.restock(id, request.units());
     }
 
     @PostMapping

@@ -27,6 +27,11 @@ public class SaleController {
         return saleService.recent();
     }
 
+    @GetMapping("/summary")
+    public List<SaleSummary> summary() {
+        return saleService.summary();
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Sale register(@RequestBody SaleRequest request) {

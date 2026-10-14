@@ -67,7 +67,48 @@
 </main>
 
 <script src="/theme.js"></script>
+<script src="/jwt.js"></script>
 <script>
+    // Solicita el JWT con fetch (visible en DevTools > Network) y luego abre la sesión web.
+    document.querySelector('#login-form').addEventListener('submit', async event => {
+        event.preventDefault();
+
+        const form = event.currentTarget;
+        const button = document.querySelector('#login-submit');
+        const message = document.querySelector('#login-message');
+
+        button.disabled = true;
+        message.classList.remove('error');
+        message.textContent = 'Iniciando sesión...';
+
+        try {
+            const response = await fetch('/api/users/login', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: document.querySelector('#username').value.trim(),
+                    password: document.querySelector('#password').value
+                })
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok || !data.token) {
+                throw new Error(data.message || 'Usuario o contraseña incorrectos.');
+            }
+
+            saveJwt(data.token);
+            form.submit();
+        } catch (error) {
+            message.textContent = error.message;
+            message.classList.add('error');
+            button.disabled = false;
+        }
+    });
+
     // Obtiene el token CSRF antes de permitir el envío del formulario.
     const loginForm = document.querySelector('#login-form');
     const csrfInput = document.querySelector('#csrf-token');

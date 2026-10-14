@@ -53,6 +53,8 @@ public AuthenticationManager authenticationManager(
                     "/app.js",
                     "/account.js",
                     "/theme.js",
+                    "/jwt.js",
+                    "/gestion.js",
                     "/favicon.ico"
                 ).permitAll()
 
@@ -77,6 +79,17 @@ public AuthenticationManager authenticationManager(
                     .hasAnyRole("MANAGER", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/products/**")
                     .hasAnyRole("MANAGER", "ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/api/products/**")
+                    .hasAnyRole("MANAGER", "ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/products/low-stock")
+                    .hasAnyRole("MANAGER", "ADMIN")
+
+                // Permite buscar en el catálogo público con JPQL.
+                .requestMatchers(HttpMethod.GET, "/api/products/search").permitAll()
+
+                // La administración de usuarios es exclusiva del rol ADMIN.
+                .requestMatchers("/api/users", "/api/users/*/role")
+                    .hasRole("ADMIN")
 
                 // Exige sesiÃ³n para consultar los datos del usuario actual.
                 .requestMatchers("/api/users/me").authenticated()
