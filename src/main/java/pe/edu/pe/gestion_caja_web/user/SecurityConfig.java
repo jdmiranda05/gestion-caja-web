@@ -102,6 +102,9 @@ public AuthenticationManager authenticationManager(
     .denyAll()
 
                 // Reserva la gestion administrativa de usuarios al administrador.
+                .requestMatchers("/api/approvals/**")
+                    .hasAnyRole("MANAGER", "ADMIN")
+
                 .requestMatchers("/api/admin/**")
                     .hasRole("ADMIN")
 

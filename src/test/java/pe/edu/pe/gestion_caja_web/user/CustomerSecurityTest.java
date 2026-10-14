@@ -1,4 +1,3 @@
-
 package pe.edu.pe.gestion_caja_web.user;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -27,6 +26,20 @@ class CustomerSecurityTest {
     @Autowired
     private UserService userService;
 
+    private String customerToken() {
+
+        User customer = userService.register(
+                "customer_test",
+                "customer_test@example.com",
+                "Password123!"
+        );
+
+        return "Bearer " + jwtService.generateToken(
+                customer.getUsername(),
+                customer.getRole()
+        );
+    }
+
     @Test
     void visitanteNoPuedeConsultarSuPerfil() throws Exception {
         mockMvc.perform(get("/api/users/me"))
@@ -35,40 +48,17 @@ class CustomerSecurityTest {
 
     @Test
     void customerAutenticadoPuedeConsultarSuPerfil() throws Exception {
-
-        // Registrar un usuario exclusivamente para esta prueba.
-        User customer = userService.register(
-                "customer_test",
-                "customer_test@example.com",
-                "Password123!"
-        );
-
-        // Generar un JWT para el usuario registrado.
-        String token = jwtService.generateToken(
-                customer.getUsername(),
-                Role.CUSTOMER
-        );
-
-        // Comprobar que puede consultar su perfil.
         mockMvc.perform(get("/api/users/me")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                .header(HttpHeaders.AUTHORIZATION, customerToken()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username")
-                        .value("customer_test"))
-                .andExpect(jsonPath("$.role")
-                        .value("CUSTOMER"));
+                .andExpect(jsonPath("$.username").value("customer_test"))
+                .andExpect(jsonPath("$.role").value("CUSTOMER"));
     }
 
     @Test
     void customerNoPuedeAccederAVentas() throws Exception {
-
-        String token = jwtService.generateToken(
-                "customer_test",
-                Role.CUSTOMER
-        );
-
         mockMvc.perform(get("/api/sales")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                .header(HttpHeaders.AUTHORIZATION, customerToken()))
                 .andExpect(status().isForbidden());
     }
 }
