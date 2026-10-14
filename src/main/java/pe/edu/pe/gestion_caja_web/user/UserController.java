@@ -1,7 +1,11 @@
 
 package pe.edu.pe.gestion_caja_web.user;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -91,6 +95,25 @@ public ResponseEntity<?> login(@RequestBody LoginRequest request) {
             .body(new ApiError("Usuario o contrasena incorrectos."));
     }
 }
+
+    /**
+     * Lista los usuarios registrados (solo ADMIN).
+     */
+    @GetMapping
+    public List<UserResponse> list() {
+        return userService.findAll();
+    }
+
+    /**
+     * Cambia el rol de un usuario (solo ADMIN).
+     */
+    @PutMapping("/{id}/role")
+    public UserResponse changeRole(
+            @PathVariable Long id,
+            @RequestBody RoleRequest request,
+            Authentication authentication) {
+        return userService.changeRole(id, request.role(), authentication.getName());
+    }
 
     /**
      * Devuelve los datos públicos de la cuenta que inició sesión.

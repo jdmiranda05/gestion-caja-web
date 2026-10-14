@@ -214,3 +214,36 @@ No deben subirse al repositorio:
 - Archivos `.env` con secretos.
 - Contraseñas y tokens JWT reales.
 - Archivos generados por Maven.
+
+## Avance 2: guía de demostración
+
+### Cuentas de demostración
+
+Al iniciar, la aplicación crea (si no existen) las cuentas `gerente` (MANAGER) y `admin` (ADMIN).
+La contraseña se define en `app.seed.staff-password` (`application.properties`); si se deja vacía no se crean.
+Las cuentas CUSTOMER se crean desde la pantalla de registro.
+
+### Flujo JWT en el navegador
+
+1. En `/login` el formulario llama primero a `POST /api/users/login` (Payload: usuario y contraseña; Response: `token` y `tokenType`).
+2. El token se guarda en `sessionStorage` y todas las llamadas a `/api/` envían `Authorization: Bearer <token>`.
+3. Sin token o con token inválido las rutas protegidas responden **401**; con un rol insuficiente responden **403**.
+
+### Endpoints principales
+
+| Método | Ruta | Acceso |
+|---|---|---|
+| POST | `/api/products`, PUT/DELETE `/api/products/{id}` | MANAGER, ADMIN |
+| PATCH | `/api/products/{id}/stock` (JPQL `UPDATE`, transaccional) | MANAGER, ADMIN |
+| GET | `/api/products/search?q=&category=` (JPQL) | Público |
+| GET | `/api/products/low-stock?limit=` (JPQL) | MANAGER, ADMIN |
+| GET | `/api/sales/summary` (JPQL `GROUP BY`) | MANAGER, ADMIN |
+| GET | `/api/users`, PUT `/api/users/{id}/role` | ADMIN |
+
+### Qué mostrar en DevTools (F12 > Network)
+
+- Login: petición `login` con Payload y respuesta 200 con el JWT.
+- Catálogo/Gestión: cabecera `Authorization: Bearer ...` en Headers de cada llamada `/api/`.
+- Crear, editar y eliminar productos (201, 200, 204) y verlos reflejados en la interfaz y en `/h2-console`.
+- Iniciar sesión como cliente: las llamadas a `/api/sales` o `/api/users` devuelven 403.
+- Ocultar el token y las credenciales al tomar capturas.

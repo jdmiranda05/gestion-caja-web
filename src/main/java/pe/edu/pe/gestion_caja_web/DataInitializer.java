@@ -8,12 +8,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import pe.edu.pe.gestion_caja_web.product.Product;
 import pe.edu.pe.gestion_caja_web.product.ProductRepository;
+import pe.edu.pe.gestion_caja_web.user.Role;
+import pe.edu.pe.gestion_caja_web.user.User;
+import pe.edu.pe.gestion_caja_web.user.UserRepository;
 
 @Configuration
 public class DataInitializer {
@@ -114,6 +119,36 @@ public class DataInitializer {
                     "Catálogo: no hay productos nuevos que añadir.");
             }
         };
+    }
+
+    /**
+     * Crea un gerente y un administrador de demostración si aún no existen.
+     * La contraseña se lee de app.seed.staff-password; si está vacía no se crea nada.
+     */
+    @Bean
+    CommandLineRunner seedStaffUsers(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            @Value("${app.seed.staff-password:}") String staffPassword) {
+        return args -> {
+            if (staffPassword.isBlank()) {
+                return;
+            }
+
+            createStaffUser(userRepository, passwordEncoder, staffPassword,
+                    "gerente", "gerente@alondralu.local", Role.MANAGER);
+            createStaffUser(userRepository, passwordEncoder, staffPassword,
+                    "admin", "admin@alondralu.local", Role.ADMIN);
+        };
+    }
+
+    private void createStaffUser(
+            UserRepository userRepository, PasswordEncoder passwordEncoder,
+            String rawPassword, String username, String email, Role role) {
+        if (!userRepository.existsByUsername(username) && !userRepository.existsByEmail(email)) {
+            userRepository.save(new User(
+                    username, email, passwordEncoder.encode(rawPassword), role));
+        }
     }
 
     private String normalizeName(String name) {

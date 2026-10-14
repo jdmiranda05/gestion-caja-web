@@ -640,7 +640,7 @@ select:focus {
     align-items: center;
 }
 
-/* Agrupa el acceso, el estado de sesiÃ³n y el indicador del sistema. */
+/* Agrupa el acceso, el estado de sesión y el indicador del sistema. */
 .account-area {
     display: flex;
     align-items: center;
@@ -650,7 +650,7 @@ select:focus {
     min-width: 250px;
 }
 
-/* Presenta el estado de sesiÃ³n sin la separaciÃ³n de la tarjeta anterior. */
+/* Presenta el estado de sesión sin la separación de la tarjeta anterior. */
 .topbar-session {
     display: flex;
     align-items: center;
@@ -668,7 +668,7 @@ select:focus {
     font-size: 0.9rem;
 }
 
-/* Define el aspecto del botÃ³n de cierre de sesiÃ³n. */
+/* Define el aspecto del botón de cierre de sesión. */
 .logout-button,
 .topbar-login {
     border: 1px solid #8bb5a7;
@@ -676,7 +676,7 @@ select:focus {
     color: #ffffff;
 }
 
-/* Da un ancho cÃ³modo al formulario de registro. */
+/* Da un ancho cómodo al formulario de registro. */
 .register-form {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -684,7 +684,7 @@ select:focus {
     max-width: 780px;
 }
 
-/* Mantiene el campo de contraseÃ±a y el botÃ³n en toda la fila. */
+/* Mantiene el campo de contraseña y el botón en toda la fila. */
 .register-form label:nth-of-type(3),
 .register-form button,
 .register-form .message {
@@ -703,7 +703,7 @@ select:focus {
     font-weight: 700;
 }
 
-/* Adapta el encabezado y el registro a pantallas pequeÃ±as. */
+/* Adapta el encabezado y el registro a pantallas pequeñas. */
 @media (max-width: 760px) {
     .account-area {
         justify-content: flex-start;
@@ -727,7 +727,7 @@ select:focus {
 }
 
 
-/* PÃ¡ginas de acceso y registro. */
+/* Páginas de acceso y registro. */
 :root {
     color-scheme: light;
 }
@@ -901,7 +901,7 @@ select:focus {
 }
 
 
-/* Herramientas de bÃºsqueda y filtros del catÃ¡logo. */
+/* Herramientas de búsqueda y filtros del catálogo. */
 .catalog-toolbar {
     display: grid;
     gap: 18px;
@@ -966,7 +966,7 @@ select:focus {
     font-size: 0.83rem;
 }
 
-/* Tarjetas del catÃ¡logo. */
+/* Tarjetas del catálogo. */
 .product-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: stretch;
@@ -1018,7 +1018,7 @@ select:focus {
     margin-top: 4px;
 }
 
-/* NavegaciÃ³n entre pÃ¡ginas. */
+/* Navegación entre páginas. */
 .catalog-pagination {
     display: flex;
     flex-wrap: wrap;
@@ -1055,7 +1055,7 @@ select:focus {
     cursor: not-allowed;
 }
 
-/* Segunda vista del catÃ¡logo, debajo del carrito. */
+/* Segunda vista del catálogo, debajo del carrito. */
 .public-list {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1153,7 +1153,7 @@ select:focus {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
 }
 
-/* InformaciÃ³n del producto */
+/* Información del producto */
 .cart-item > div:first-child {
     flex: 1;
     min-width: 0;
@@ -1219,7 +1219,7 @@ select:focus {
     font-size: 1.65rem;
 }
 
-/* BotÃ³n para confirmar la compra */
+/* Botón para confirmar la compra */
 #checkout-button {
     margin-top: 16px;
     padding: 14px 24px;
@@ -1232,7 +1232,7 @@ select:focus {
     cursor: not-allowed;
 }
 
-/* DiseÃ±o adaptable a celulares */
+/* Diseño adaptable a celulares */
 @media (max-width: 600px) {
     .cart-item {
         flex-direction: column;
@@ -1268,7 +1268,7 @@ select:focus {
    CUSTOMER - HISTORIAL Y RECLAMOS
    ========================================== */
 
-/* SeparaciÃ³n entre secciones */
+/* Separación entre secciones */
 .orders-section,
 .claims-section {
     margin-top: 28px;
@@ -1411,7 +1411,7 @@ select:focus {
     font-weight: 700;
 }
 
-/* InformaciÃ³n de reclamos */
+/* Información de reclamos */
 .claim-card > p {
     margin: 9px 0;
     line-height: 1.6;
@@ -1436,7 +1436,7 @@ select:focus {
     color: var(--muted) !important;
 }
 
-/* PaginaciÃ³n de pedidos y reclamos */
+/* Paginación de pedidos y reclamos */
 #orders-pagination,
 #claims-pagination {
     display: flex;
@@ -1473,7 +1473,7 @@ select:focus {
     cursor: not-allowed;
 }
 
-/* AdaptaciÃ³n para celulares */
+/* Adaptación para celulares */
 @media (max-width: 600px) {
     .order-card,
     .claim-card {
