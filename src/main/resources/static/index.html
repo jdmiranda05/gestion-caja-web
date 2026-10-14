@@ -208,6 +208,8 @@
 
     <button class="tab-btn" type="button"
             data-gestion-tab="reportes">Reportes</button>
+        <button class="tab-btn" id="admin-tab" type="button"
+            data-gestion-tab="administracion" hidden>Administración</button>
 </nav>
     <section class="panel" data-gestion-panel="productos">
     <p class="eyebrow">CRUD DE PRODUCTOS</p>
@@ -398,11 +400,50 @@
 </div>
 </section>
 
-    <section class="panel" id="users-panel" hidden>
+    <section class="panel" id="users-panel"
+             data-gestion-panel="administracion" hidden>
         <p class="eyebrow">SOLO ADMINISTRADOR</p>
-        <h2>Usuarios y roles</h2>
+        <h2>Administración de usuarios</h2>
+        <p class="muted-text">
+            Gestiona los roles y revisa las solicitudes de desactivación de cuentas.
+        </p>
+
+        <h3>Usuarios y roles</h3>
         <div id="users-list" class="product-list"></div>
         <p id="users-message" class="message" role="status" aria-live="polite"></p>
+
+        <form id="deactivation-request-form">
+            <h3>Solicitar desactivación</h3>
+            <label for="deactivation-target">Usuario
+                <select id="deactivation-target" required>
+                    <option value="">Selecciona un usuario</option>
+                </select>
+            </label>
+            <label for="deactivation-reason">Motivo
+                <textarea id="deactivation-reason" rows="3" maxlength="1000"
+                          required placeholder="Explica por qué debe desactivarse esta cuenta."></textarea>
+            </label>
+            <button class="button primary" type="submit">Enviar solicitud</button>
+        </form>
+        <p id="deactivation-form-message" class="message" role="status" aria-live="polite"></p>
+
+        <div class="panel-heading">
+            <h3>Solicitudes de desactivación</h3>
+            <button class="button secondary" id="deactivation-refresh" type="button">
+                Actualizar
+            </button>
+        </div>
+        <label for="deactivation-status-filter">Estado
+            <select id="deactivation-status-filter">
+                <option value="">Todas</option>
+                <option value="PENDING">Pendientes</option>
+                <option value="APPROVED">Aprobadas</option>
+                <option value="REJECTED">Rechazadas</option>
+                <option value="EXECUTED">Ejecutadas</option>
+            </select>
+        </label>
+        <div id="deactivation-requests-list" class="product-list"></div>
+        <p id="deactivation-requests-message" class="message" role="status" aria-live="polite"></p>
     </section>
 </div>
 

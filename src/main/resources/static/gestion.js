@@ -6,6 +6,9 @@ const productFormElement = document.querySelector('#product-form');
 const productFormMessage = document.querySelector('#product-form-message');
 const managementMessage = document.querySelector('#management-message');
 const usersMessage = document.querySelector('#users-message');
+const deactivationFormMessage = document.querySelector('#deactivation-form-message');
+const deactivationRequestsMessage = document.querySelector('#deactivation-requests-message');
+let adminUsers = [];
 
 /**
  * Convierte una respuesta fallida en un mensaje legible.
@@ -25,7 +28,9 @@ async function errorMessageFrom(response, fallback) {
  */
 async function initManagement() {
     renderManagedProducts();
-    mostrarGestionTab('productos');
+    const isAdmin = currentUser?.role === 'ADMIN';
+    document.querySelector('#admin-tab').hidden = !isAdmin;
+    mostrarGestionTab(isAdmin ? 'administracion' : 'productos');
 
     await Promise.all([
     loadLowStock(),
@@ -34,11 +39,9 @@ async function initManagement() {
     loadInactiveProducts()
 ]);
 
-    const usersPanel = document.querySelector('#users-panel');
-    usersPanel.hidden = currentUser?.role !== 'ADMIN';
-
-    if (currentUser?.role === 'ADMIN') {
+    if (isAdmin) {
         await loadUsers();
+        await loadDeactivationRequests();
     }
 }
 
@@ -283,8 +286,15 @@ async function loadUsers() {
         }
 
         const users = await response.json();
+        adminUsers = Array.isArray(users) ? users : [];
+        const targetSelect = document.querySelector('#deactivation-target');
+        targetSelect.innerHTML = '<option value="">Selecciona un usuario</option>' +
+            adminUsers
+                .filter(user => Number(user.id) !== Number(currentUser.id))
+                .map(user => `<option value="${Number(user.id)}">${escapeHtml(user.username)} (${escapeHtml(user.role)})</option>`)
+                .join('');
 
-        document.querySelector('#users-list').innerHTML = users.map(user => `
+        document.querySelector('#users-list').innerHTML = adminUsers.map(user => `
             <article class="product">
                 <div class="product-info">
                     <h3>${escapeHtml(user.username)}</h3>
@@ -305,6 +315,119 @@ async function loadUsers() {
         showMessage(usersMessage, error.message, true);
     }
 }
+
+const deactivationStatusLabels = {
+    PENDING: 'Pendiente',
+    APPROVED: 'Aprobada',
+    REJECTED: 'Rechazada',
+    EXECUTED: 'Ejecutada'
+};
+
+async function loadDeactivationRequests() {
+    const list = document.querySelector('#deactivation-requests-list');
+    if (!list || currentUser?.role !== 'ADMIN') return;
+
+    const status = document.querySelector('#deactivation-status-filter').value;
+    const url = status
+        ? `/api/approvals/deactivation-requests?status=${encodeURIComponent(status)}`
+        : '/api/approvals/deactivation-requests';
+
+    showMessage(deactivationRequestsMessage, 'Cargando solicitudes...');
+
+    try {
+        const response = await apiRequest(url);
+        if (!response.ok) {
+            throw new Error(await errorMessageFrom(response, 'No se pudieron cargar las solicitudes.'));
+        }
+
+        const requests = await response.json();
+        list.innerHTML = requests.length ? requests.map(request => {
+            const target = adminUsers.find(user => Number(user.id) === Number(request.targetUserId));
+            const requester = adminUsers.find(user => Number(user.id) === Number(request.requestedByUserId));
+            const requestedAt = request.requestedAt
+                ? new Date(request.requestedAt).toLocaleString('es-PE')
+                : 'Sin fecha';
+            const canDecide = request.status === 'PENDING'
+                && Number(request.requestedByUserId) !== Number(currentUser.id);
+
+            return `<article class="product">
+                <div class="product-info">
+                    <h3>Solicitud #${Number(request.id)} · ${escapeHtml(deactivationStatusLabels[request.status] || request.status)}</h3>
+                    <p><strong>Cuenta:</strong> ${escapeHtml(target?.username || `Usuario #${request.targetUserId}`)}</p>
+                    <p><strong>Solicitada por:</strong> ${escapeHtml(requester?.username || `Usuario #${request.requestedByUserId}`)}</p>
+                    <p><strong>Motivo:</strong> ${escapeHtml(request.reason || '')}</p>
+                    <p class="muted-text">${escapeHtml(requestedAt)}</p>
+                </div>
+                <div class="price">
+                    ${canDecide ? `
+                        <button class="button primary" type="button" data-deactivation-action="approve" data-request-id="${Number(request.id)}">Aprobar</button>
+                        <button class="button secondary" type="button" data-deactivation-action="reject" data-request-id="${Number(request.id)}">Rechazar</button>
+                    ` : ''}
+                    ${request.status === 'APPROVED' ? `
+                        <button class="button secondary" type="button" data-deactivation-action="execute" data-request-id="${Number(request.id)}">Ejecutar desactivación</button>
+                    ` : ''}
+                </div>
+            </article>`;
+        }).join('') : '<p class="muted-text">No hay solicitudes con este estado.</p>';
+        showMessage(deactivationRequestsMessage, `${requests.length} solicitud(es).`);
+    } catch (error) {
+        list.innerHTML = '';
+        showMessage(deactivationRequestsMessage, error.message, true);
+    }
+}
+
+document.querySelector('#deactivation-request-form').addEventListener('submit', async event => {
+    event.preventDefault();
+    const targetUserId = Number(document.querySelector('#deactivation-target').value);
+    const reason = document.querySelector('#deactivation-reason').value.trim();
+    if (!targetUserId || !reason) return;
+
+    try {
+        const response = await apiRequest('/api/admin/users/deactivation-requests', {
+            method: 'POST',
+            body: JSON.stringify({ targetUserId, reason })
+        });
+        if (!response.ok) {
+            throw new Error(await errorMessageFrom(response, 'No se pudo enviar la solicitud.'));
+        }
+
+        event.target.reset();
+        showMessage(deactivationFormMessage, 'Solicitud enviada para aprobación.');
+        await loadDeactivationRequests();
+    } catch (error) {
+        showMessage(deactivationFormMessage, error.message, true);
+    }
+});
+
+document.querySelector('#deactivation-requests-list').addEventListener('click', async event => {
+    const button = event.target.closest('[data-deactivation-action]');
+    if (!button || currentUser?.role !== 'ADMIN') return;
+
+    const requestId = Number(button.dataset.requestId);
+    const action = button.dataset.deactivationAction;
+    if (action === 'execute'
+            && !confirm('¿Ejecutar la desactivación de esta cuenta?')) return;
+
+    const path = action === 'execute'
+        ? `/api/admin/users/deactivation-requests/${requestId}/execute`
+        : `/api/approvals/deactivation-requests/${requestId}/${action}`;
+
+    button.disabled = true;
+    try {
+        const response = await apiRequest(path, { method: 'POST' });
+        if (!response.ok) {
+            throw new Error(await errorMessageFrom(response, 'No se pudo procesar la solicitud.'));
+        }
+        showMessage(deactivationRequestsMessage, 'Solicitud actualizada.');
+        await loadDeactivationRequests();
+    } catch (error) {
+        showMessage(deactivationRequestsMessage, error.message, true);
+        button.disabled = false;
+    }
+});
+
+document.querySelector('#deactivation-refresh').addEventListener('click', loadDeactivationRequests);
+document.querySelector('#deactivation-status-filter').addEventListener('change', loadDeactivationRequests);
 
 /**
  * Crea o actualiza un producto según exista un identificador en el formulario.
