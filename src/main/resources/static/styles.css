@@ -356,7 +356,8 @@ label {
 }
 
 input,
-select {
+select,
+textarea {
     display: block;
     width: 100%;
     margin-top: 7px;
@@ -366,10 +367,18 @@ select {
     background: white;
     color: var(--ink);
     font: inherit;
+    box-sizing: border-box;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.5;
 }
 
 input:focus,
-select:focus {
+select:focus,
+textarea:focus {
     outline: 2px solid #80b9a7;
     outline-offset: 1px;
 }
