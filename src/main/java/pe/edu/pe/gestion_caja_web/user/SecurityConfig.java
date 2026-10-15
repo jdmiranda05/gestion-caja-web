@@ -16,13 +16,13 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 
 /**
- * Configura las reglas de acceso, autenticaciÃ³n y protecciÃ³n de la aplicaciÃ³n.
+ * Configura las reglas de acceso, autenticacion y proteccion de la aplicacion.
  */
 @Configuration
 public class SecurityConfig {
 
     /**
-     * Proporciona BCrypt para proteger las contraseÃ±as almacenadas.
+     * Proporciona BCrypt para proteger las contraseñas almacenadas.
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
