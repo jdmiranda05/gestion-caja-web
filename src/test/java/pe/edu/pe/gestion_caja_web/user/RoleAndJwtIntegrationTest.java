@@ -16,6 +16,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import pe.edu.pe.gestion_caja_web.user.model.Role;
+import pe.edu.pe.gestion_caja_web.user.model.User;
+import pe.edu.pe.gestion_caja_web.user.repository.UserRepository;
+import pe.edu.pe.gestion_caja_web.user.security.JwtService;
+import pe.edu.pe.gestion_caja_web.user.service.UserService;
+
 /**
  * Comprueba el login con JWT, los endpoints protegidos y la autorización por rol.
  */

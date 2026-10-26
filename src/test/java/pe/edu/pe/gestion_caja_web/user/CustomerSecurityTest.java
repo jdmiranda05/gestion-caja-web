@@ -12,6 +12,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import pe.edu.pe.gestion_caja_web.user.model.User;
+import pe.edu.pe.gestion_caja_web.user.security.JwtService;
+import pe.edu.pe.gestion_caja_web.user.service.UserService;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional

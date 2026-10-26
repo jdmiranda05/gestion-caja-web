@@ -13,10 +13,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import pe.edu.pe.gestion_caja_web.user.JwtService;
-import pe.edu.pe.gestion_caja_web.user.Role;
-import pe.edu.pe.gestion_caja_web.user.User;
-import pe.edu.pe.gestion_caja_web.user.UserRepository;
+import pe.edu.pe.gestion_caja_web.user.model.Role;
+import pe.edu.pe.gestion_caja_web.user.model.User;
+import pe.edu.pe.gestion_caja_web.user.repository.UserRepository;
+import pe.edu.pe.gestion_caja_web.user.security.JwtService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
