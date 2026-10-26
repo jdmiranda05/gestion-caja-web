@@ -1,0 +1,404 @@
+/* ==========================================
+   CUSTOMER - CARRITO DE COMPRAS
+   ========================================== */
+
+.customer-panel {
+    margin-top: 24px;
+}
+
+.cart-list {
+    display: grid;
+    gap: 14px;
+    margin-top: 20px;
+}
+
+/* Tarjeta individual de cada producto */
+.cart-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+    background: var(--paper, #ffffff);
+    border: 1px solid var(--line, #dce5df);
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cart-item:hover {
+    border-color: var(--green, #2f755b);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+}
+
+/* Información del producto */
+.cart-item > div:first-child {
+    flex: 1;
+    min-width: 0;
+}
+
+.cart-item > div:first-child strong {
+    display: block;
+    font-size: 1.05rem;
+    color: var(--ink);
+    margin-bottom: 8px;
+    overflow-wrap: anywhere;
+}
+
+.cart-item > div:first-child p {
+    margin: 5px 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.cart-item > div:first-child p:last-child {
+    font-weight: 700;
+    color: var(--green);
+}
+
+/* Controles de cantidad y eliminar */
+.cart-item-actions {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.cart-item-actions label {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+.cart-item-actions input {
+    width: 85px;
+    margin-top: 6px;
+    padding: 10px;
+    border-radius: 9px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.cart-item-actions button {
+    min-height: 42px;
+    border-radius: 9px;
+}
+
+/* Resumen del carrito */
+.customer-panel > .total-line {
+    margin-top: 22px;
+    padding: 20px;
+    background: var(--paper, #ffffff);
+    border: 1px solid var(--line, #dce5df);
+    border-radius: 12px;
+}
+
+.customer-panel > .total-line strong {
+    font-size: 1.65rem;
+}
+
+/* Botón para confirmar la compra */
+#checkout-button {
+    margin-top: 16px;
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+#checkout-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* Diseño adaptable a celulares */
+@media (max-width: 600px) {
+    .cart-item {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px;
+        gap: 14px;
+    }
+
+    .cart-item-actions {
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+    .cart-item-actions input {
+        width: 90px;
+    }
+
+    .customer-panel > .total-line {
+        padding: 15px;
+    }
+
+    .customer-panel > .total-line strong {
+        font-size: 1.35rem;
+    }
+
+    #checkout-button {
+        width: 100%;
+    }
+}
+
+
+/* ==========================================
+   CUSTOMER - HISTORIAL Y RECLAMOS
+   ========================================== */
+
+/* Separación entre secciones */
+.orders-section,
+.claims-section {
+    margin-top: 28px;
+}
+
+#claim-description {
+    display: block;
+    width: 100%;
+    min-height: 160px;
+    margin-top: 7px;
+    padding: 12px;
+    border: 1px solid #cad8ce;
+    border-radius: 6px;
+    font: inherit;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+#claim-description:focus {
+    outline: 2px solid #80b9a7;
+    outline-offset: 1px;
+}
+
+.orders-list,
+.claims-list {
+    display: grid;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+/* Tarjetas de pedidos y reclamos */
+.order-card,
+.claim-card {
+    padding: 22px;
+    border: 1px solid var(--line, #dce5df);
+    border-radius: 16px;
+    background: var(--paper, #ffffff);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    transition: border-color 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+.order-card:hover,
+.claim-card:hover {
+    border-color: var(--green, #2f755b);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+}
+
+/* Encabezado de pedidos */
+.order-card > div:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+}
+
+.order-card > div:first-child strong,
+.claim-card-heading strong {
+    font-size: 1.1rem;
+    color: var(--ink);
+}
+
+.order-card > div:first-child p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+/* Lista de productos de cada pedido */
+.order-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 14px 0;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.order-item-details {
+    display: grid;
+    gap: 5px;
+    flex: 1;
+    min-width: 150px;
+}
+
+.order-item-details span:first-child {
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.order-item-details span:last-child {
+    font-size: 0.88rem;
+    color: var(--muted);
+}
+
+.claim-product-button {
+    border-radius: 9px;
+    font-size: 0.85rem;
+}
+
+/* Total de cada pedido */
+.order-card > p:last-child {
+    margin: 16px 0 0;
+    text-align: right;
+    color: var(--green);
+    font-size: 1.08rem;
+}
+
+/* Encabezado de reclamos */
+.claim-card-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+}
+
+/* Etiqueta del estado */
+.claim-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 13px;
+    border-radius: 999px;
+    background: rgba(47, 117, 91, 0.12);
+    color: var(--green);
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+/* Información de reclamos */
+.claim-card > p {
+    margin: 9px 0;
+    line-height: 1.6;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+}
+
+.claim-card > p strong {
+    color: var(--muted);
+}
+
+.claim-description {
+    padding: 14px;
+    border-radius: 10px;
+    background: rgba(127, 127, 127, 0.06);
+}
+
+.claim-date {
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    font-size: 0.85rem;
+    color: var(--muted) !important;
+}
+
+/* Paginación de pedidos y reclamos */
+#orders-pagination,
+#claims-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 22px;
+    padding: 14px 0;
+}
+
+#orders-pagination[hidden],
+#claims-pagination[hidden] {
+    display: none;
+}
+
+#orders-page-info,
+#claims-page-info {
+    color: var(--muted);
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+#orders-pagination button,
+#claims-pagination button {
+    border-radius: 9px;
+    min-height: 40px;
+}
+
+#orders-pagination button:disabled,
+#claims-pagination button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* Adaptación para celulares */
+@media (max-width: 600px) {
+    .order-card,
+    .claim-card {
+        padding: 16px;
+    }
+
+    .order-item {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .claim-product-button {
+        width: 100%;
+    }
+
+    .order-card > p:last-child {
+        text-align: left;
+    }
+
+    #orders-pagination,
+    #claims-pagination {
+        gap: 8px;
+    }
+
+    #orders-page-info,
+    #claims-page-info {
+        width: 100%;
+        order: -1;
+    }
+}
+
+/* Respuesta de gerencia en los reclamos del cliente */
+.claim-staff-response {
+    margin-top: 14px;
+    padding: 16px;
+    border: 1px solid var(--border-color, #d1d5db);
+    border-left: 4px solid #3b82f6;
+    border-radius: 10px;
+    background: rgba(59, 130, 246, 0.06);
+}
+
+.claim-staff-response p {
+    margin: 6px 0;
+}
+
+.claim-staff-response .claim-description {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.6;
+}

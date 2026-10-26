@@ -304,12 +304,42 @@ No deben subirse al repositorio:
 - Contraseñas y tokens JWT reales.
 - Archivos generados por Maven.
 
+## Estructura del proyecto
+
+```
+src/main/java/pe/edu/pe/gestion_caja_web/
+├── GestionCajaWebApplication.java
+├── config/              # DataInitializer (catálogo y cuentas iniciales)
+├── product/ sale/ purchase/ claim/
+│   ├── controller/      # Endpoints REST
+│   ├── service/         # Reglas de negocio y transacciones
+│   ├── repository/      # Spring Data JPA y consultas JPQL
+│   ├── model/           # Entidades y enumeraciones
+│   └── dto/             # Solicitudes y respuestas de la API
+└── user/
+    ├── controller/ service/ repository/ model/ dto/   # Cuentas y registro
+    ├── security/        # SecurityConfig, JwtService, CustomUserDetailsService
+    └── admin/           # Desactivaciones, aprobaciones y auditoría
+        └── controller/ service/ repository/ model/
+
+src/main/resources/
+├── application.properties
+├── db/migration/        # Migraciones de Flyway
+└── static/
+    ├── index.html, login.html, registro.html
+    ├── css/             # base, receipt, account, catalog, orders y polish
+    └── js/              # app, gestion, jwt, theme y account
+```
+
+Los archivos CSS se cargan en ese orden: `polish.css` va al final y contiene el refinamiento visual, con soporte para el tema oscuro.
+
 ## Avance 2: guía de demostración
 
 ### Cuentas de demostración
 
-Al iniciar, la aplicación puede crear (si no existen) las cuentas `gerente` (MANAGER) y `admin` (ADMIN), siempre que se configure una contraseña de demostración.
-La contraseña se obtiene de la propiedad `app.seed.staff-password`. Actualmente no está definida en `application.properties`, por lo que las cuentas no se crean automáticamente salvo que se proporcione un valor.
+Al iniciar, la aplicación crea (si no existen) las cuentas `gerente` (MANAGER) y `admin` (ADMIN).
+La contraseña se toma de la variable de entorno `STAFF_PASSWORD`; si no se define, se usa el valor de desarrollo de `application.properties` (`app.seed.staff-password`).
+Si la cuenta ya existía en la base de datos local, conserva su contraseña anterior.
 Las cuentas CUSTOMER se crean desde la pantalla de registro.
 
 ### Flujo JWT en el navegador

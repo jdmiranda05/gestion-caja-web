@@ -1,0 +1,315 @@
+@media (max-width: 760px) {
+    .topbar {
+        display: block;
+        padding: 30px 20px;
+    }
+
+    .status {
+        display: inline-block;
+        margin-top: 22px;
+    }
+
+    .layout {
+        padding: 20px 14px 40px;
+    }
+
+    .hero-panel {
+        padding: 25px;
+    }
+
+    .hero-mark {
+        flex-basis: 90px;
+        height: 90px;
+        font-size: 3rem;
+    }
+
+    .auth-grid,
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .metrics {
+        gap: 8px;
+    }
+
+    .metrics article {
+        padding: 14px 10px;
+    }
+
+    .metrics strong {
+        font-size: 1.55rem;
+    }
+
+    .panel {
+        padding: 18px;
+    }
+
+    .panel-heading {
+        align-items: flex-start;
+    }
+}
+
+/* Organiza la marca y las acciones de cuenta en el encabezado. */
+.topbar {
+    align-items: center;
+}
+
+/* Agrupa el acceso, el estado de sesión y el indicador del sistema. */
+.account-area {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+    min-width: 250px;
+}
+
+/* Presenta el estado de sesión sin la separación de la tarjeta anterior. */
+.topbar-session {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+/* Mejora la legibilidad del saludo en el encabezado oscuro. */
+.session-message {
+    margin: 0;
+    color: #f4f7f2;
+    font-size: 0.9rem;
+}
+
+/* Define el aspecto del botón de cierre de sesión. */
+.logout-button,
+.topbar-login {
+    border: 1px solid #8bb5a7;
+    background: transparent;
+    color: #ffffff;
+}
+
+/* Da un ancho cómodo al formulario de registro. */
+.register-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    max-width: 780px;
+}
+
+/* Mantiene el campo de contraseña y el botón en toda la fila. */
+.register-form label:nth-of-type(3),
+.register-form button,
+.register-form .message {
+    grid-column: 1 / -1;
+}
+
+/* Separa el enlace para quienes ya tienen una cuenta. */
+.auth-login-note {
+    margin-top: 20px;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.auth-login-note a {
+    color: var(--green);
+    font-weight: 700;
+}
+
+/* Adapta el encabezado y el registro a pantallas pequeñas. */
+@media (max-width: 760px) {
+    .account-area {
+        justify-content: flex-start;
+        margin-top: 24px;
+        min-width: 0;
+    }
+
+    .topbar-session {
+        justify-content: flex-start;
+    }
+
+    .register-form {
+        grid-template-columns: 1fr;
+    }
+
+    .register-form label:nth-of-type(3),
+    .register-form button,
+    .register-form .message {
+        grid-column: auto;
+    }
+}
+
+
+/* Páginas de acceso y registro. */
+:root {
+    color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --ink: #e6efec;
+    --muted: #aabcb6;
+    --paper: #101a18;
+    --panel: #1b2925;
+    --green: #5fc6b7;
+    --lime: #30462e;
+    --line: #354740;
+    --orange: #ff9b72;
+}
+
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea {
+    background: #14211e;
+    color: var(--ink);
+    border-color: var(--line);
+}
+
+:root[data-theme="dark"] .secondary {
+    background: #263b35;
+    color: var(--ink);
+}
+
+:root[data-theme="dark"] .account-card {
+    box-shadow: 0 20px 60px rgb(0 0 0 / 25%);
+}
+
+.account-page {
+    min-height: 100vh;
+    background:
+        radial-gradient(ellipse at top right, rgb(15 118 110 / 12%), transparent 45%),
+        var(--paper);
+}
+
+.account-topbar {
+    align-items: center;
+}
+
+.account-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.theme-toggle {
+    border: 1px solid #8bb5a7;
+    background: transparent;
+    color: #fff;
+}
+
+.btn-icono {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    padding: 0;
+}
+
+.account-layout {
+    display: flex;
+    justify-content: center;
+    padding: 55px 20px 80px;
+}
+
+.account-card {
+    width: 100%;
+    max-width: 470px;
+    padding: 36px;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: var(--panel);
+    box-shadow: 0 16px 48px rgb(23 35 33 / 8%);
+}
+
+.account-card h2 {
+    margin: 8px 0 12px;
+    font-size: clamp(1.8rem, 5vw, 2.4rem);
+}
+
+.account-card form {
+    display: grid;
+    gap: 18px;
+    margin-top: 26px;
+}
+
+.account-card label {
+    display: grid;
+    gap: 8px;
+    color: var(--ink);
+    font-weight: 700;
+}
+
+.account-card input {
+    width: 100%;
+    min-width: 0;
+    padding: 13px 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--panel);
+    color: var(--ink);
+    font: inherit;
+}
+
+.account-card input:focus-visible,
+.account-card button:focus-visible,
+.account-card a:focus-visible {
+    outline: 3px solid var(--orange);
+    outline-offset: 3px;
+}
+
+.account-card .primary {
+    min-height: 48px;
+    margin-top: 4px;
+}
+
+.account-note {
+    margin-top: 24px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.7;
+}
+
+.account-note a,
+.registration-success-link {
+    color: var(--green);
+    font-weight: 700;
+}
+
+.registration-success-link {
+    display: inline-block;
+    margin-top: 8px;
+}
+
+.account-card .message:empty {
+    display: none;
+}
+
+.account-card .message.error {
+    color: #d65b4b;
+}
+
+@media (max-width: 760px) {
+    .account-topbar {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 25px 20px;
+    }
+
+    .account-actions {
+        margin-top: 18px;
+    }
+
+    .account-layout {
+        padding: 28px 14px 50px;
+    }
+
+    .account-card {
+        padding: 25px 20px;
+    }
+}

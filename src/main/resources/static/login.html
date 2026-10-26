@@ -6,7 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light dark">
     <title>Iniciar sesión | Tienda Alondralu</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/receipt.css">
+    <link rel="stylesheet" href="/css/account.css">
+    <link rel="stylesheet" href="/css/catalog.css">
+    <link rel="stylesheet" href="/css/orders.css">
+    <link rel="stylesheet" href="/css/polish.css">
 </head>
 <body class="account-page">
 <header class="topbar account-topbar">
@@ -66,8 +71,8 @@
     </section>
 </main>
 
-<script src="/theme.js"></script>
-<script src="/jwt.js"></script>
+<script src="/js/theme.js"></script>
+<script src="/js/jwt.js"></script>
 <script>
     // Solicita el JWT con fetch (visible en DevTools > Network) y luego abre la sesión web.
     document.querySelector('#login-form').addEventListener('submit', async event => {
