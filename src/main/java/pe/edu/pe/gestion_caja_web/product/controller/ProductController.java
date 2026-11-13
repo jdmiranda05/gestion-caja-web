@@ -1,5 +1,6 @@
 package pe.edu.pe.gestion_caja_web.product.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -63,19 +64,27 @@ public class ProductController {
         return productService.lowStock(limit);
     }
 
+    /**
+     * Consulta un producto por su identificador (formulario de edicion).
+     */
+    @GetMapping("/{id}")
+    public Product findById(@PathVariable Long id) {
+        return productService.getById(id);
+    }
+
     @PatchMapping("/{id}/stock")
-    public Product restock(@PathVariable Long id, @RequestBody StockRequest request) {
+    public Product restock(@PathVariable Long id, @Valid @RequestBody StockRequest request) {
         return productService.restock(id, request.units());
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Product create(@RequestBody ProductRequest request) {
+    public Product create(@Valid @RequestBody ProductRequest request) {
         return productService.create(request);
     }
 
     @PutMapping("/{id}")
-    public Product update(@PathVariable Long id, @RequestBody ProductRequest request) {
+    public Product update(@PathVariable Long id, @Valid @RequestBody ProductRequest request) {
         return productService.update(id, request);
     }
     @DeleteMapping("/{id}")

@@ -1,5 +1,6 @@
 package pe.edu.pe.gestion_caja_web.sale.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +11,8 @@ import pe.edu.pe.gestion_caja_web.sale.model.Sale;
 
 public interface SaleRepository extends JpaRepository<Sale, Long> {
     List<Sale> findTop20ByOrderBySoldAtDesc();
+
+    List<Sale> findBySoldAtGreaterThanEqualOrderBySoldAtAsc(LocalDateTime from);
 
     /**
      * Agrupa las ventas por producto y calcula unidades e ingresos (JPQL).

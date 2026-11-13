@@ -1,0 +1,170 @@
+/*
+ * Tokens del sistema de diseño de Tienda Alondralu.
+ * Un único lugar para color, tipografía, espaciado, radios, sombras y movimiento.
+ * El modo oscuro redefine solo los colores; el resto es compartido.
+ */
+:root {
+  color-scheme: light;
+
+  /* Superficies */
+  --bg: #f5f4ef;
+  --surface: #ffffff;
+  --surface-2: #faf9f6;
+  --surface-sunken: #efede6;
+  --overlay: rgb(20 22 20 / 0.42);
+
+  /* Tinta */
+  --ink: #171a18;
+  --ink-2: #454b47;
+  --ink-3: #6b716d;
+  --ink-inverse: #ffffff;
+
+  /* Bordes */
+  --line: #e4e2da;
+  --line-strong: #cfccc2;
+  --focus: #0e6b4b;
+
+  /* Marca: verde toldo de bodega */
+  --brand: #0e6b4b;
+  --brand-hover: #0b5a3f;
+  --brand-ink: #0b5a3f;
+  --brand-soft: #e3f0e9;
+  --brand-softer: #f0f7f3;
+
+  /* Datos (validado con dataviz: L, croma y contraste sobre la superficie) */
+  --chart-1: #0e7c56;
+  --chart-grid: #ebe9e2;
+  --chart-axis: #8a8f8b;
+
+  /* Estados: siempre con icono y texto, nunca solo color */
+  --ok: #17784a;
+  --ok-soft: #e3f3ea;
+  --warn: #9a5b00;
+  --warn-soft: #fbf0dc;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+  --info: #2c5aa0;
+  --info-soft: #e8eef9;
+  --neutral-soft: #efeee9;
+
+  /* Tipografía */
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+
+  --text-xs: 0.75rem;     /* 12 */
+  --text-sm: 0.8125rem;   /* 13 */
+  --text-base: 0.875rem;  /* 14 */
+  --text-md: 1rem;        /* 16 */
+  --text-lg: 1.25rem;     /* 20 */
+  --text-xl: 1.5rem;      /* 24 */
+  --text-2xl: 2rem;       /* 32 */
+
+  --leading-tight: 1.2;
+  --leading: 1.5;
+
+  /* Espaciado: retícula de 4 px */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+
+  /* Radios */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-pill: 999px;
+
+  /* Sombras: discretas, solo para elevar capas flotantes */
+  --shadow-1: 0 1px 2px rgb(23 26 24 / 0.05);
+  --shadow-2: 0 1px 2px rgb(23 26 24 / 0.04), 0 4px 12px rgb(23 26 24 / 0.06);
+  --shadow-3: 0 12px 32px rgb(23 26 24 / 0.14), 0 2px 6px rgb(23 26 24 / 0.06);
+
+  /* Movimiento */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 320ms;
+
+  /* Layout */
+  --sidebar-w: 248px;
+  --topbar-h: 60px;
+  --content-max: 1200px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #111312;
+    --surface: #181b19;
+    --surface-2: #1d201e;
+    --surface-sunken: #141615;
+    --overlay: rgb(0 0 0 / 0.6);
+    --ink: #eceeeb;
+    --ink-2: #b9bfba;
+    --ink-3: #8b928d;
+    --line: #2a2e2b;
+    --line-strong: #3a3f3c;
+    --focus: #4fbf8f;
+    --brand: #2f9e70;
+    --brand-hover: #3aaf7f;
+    --brand-ink: #6fd0a5;
+    --brand-soft: #18352a;
+    --brand-softer: #152620;
+    --chart-1: #3aa87a;
+    --chart-grid: #262a27;
+    --chart-axis: #7d847f;
+    --ok: #5cc68f;
+    --ok-soft: #173326;
+    --warn: #e0a243;
+    --warn-soft: #34280f;
+    --danger: #f07a6f;
+    --danger-soft: #3a1a17;
+    --info: #85aef0;
+    --info-soft: #1a2638;
+    --neutral-soft: #242826;
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.3);
+    --shadow-2: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 12px rgb(0 0 0 / 0.3);
+    --shadow-3: 0 16px 40px rgb(0 0 0 / 0.5);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #111312;
+  --surface: #181b19;
+  --surface-2: #1d201e;
+  --surface-sunken: #141615;
+  --overlay: rgb(0 0 0 / 0.6);
+  --ink: #eceeeb;
+  --ink-2: #b9bfba;
+  --ink-3: #8b928d;
+  --line: #2a2e2b;
+  --line-strong: #3a3f3c;
+  --focus: #4fbf8f;
+  --brand: #2f9e70;
+  --brand-hover: #3aaf7f;
+  --brand-ink: #6fd0a5;
+  --brand-soft: #18352a;
+  --brand-softer: #152620;
+  --chart-1: #3aa87a;
+  --chart-grid: #262a27;
+  --chart-axis: #7d847f;
+  --ok: #5cc68f;
+  --ok-soft: #173326;
+  --warn: #e0a243;
+  --warn-soft: #34280f;
+  --danger: #f07a6f;
+  --danger-soft: #3a1a17;
+  --info: #85aef0;
+  --info-soft: #1a2638;
+  --neutral-soft: #242826;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow-2: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 12px rgb(0 0 0 / 0.3);
+  --shadow-3: 0 16px 40px rgb(0 0 0 / 0.5);
+}

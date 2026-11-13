@@ -3,7 +3,12 @@ package pe.edu.pe.gestion_caja_web.sale.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -13,6 +18,7 @@ import jakarta.transaction.Transactional;
 
 import pe.edu.pe.gestion_caja_web.product.model.Product;
 import pe.edu.pe.gestion_caja_web.product.service.ProductService;
+import pe.edu.pe.gestion_caja_web.sale.dto.DailySales;
 import pe.edu.pe.gestion_caja_web.sale.dto.ReceiptResponse;
 import pe.edu.pe.gestion_caja_web.sale.dto.SaleRequest;
 import pe.edu.pe.gestion_caja_web.sale.dto.SaleSummary;
@@ -48,6 +54,32 @@ public class SaleService {
                 total, request.customerName()));
     }
 
+    /**
+     * Ventas agrupadas por dia en los ultimos N dias (incluye dias sin ventas en cero).
+     */
+    public List<DailySales> daily(int days) {
+        int range = Math.max(1, Math.min(days, 90));
+        LocalDate today = LocalDate.now();
+        LocalDate from = today.minusDays(range - 1L);
+
+        Map<LocalDate, List<Sale>> byDay = saleRepository
+                .findBySoldAtGreaterThanEqualOrderBySoldAtAsc(from.atStartOfDay())
+                .stream()
+                .collect(Collectors.groupingBy(sale -> sale.getSoldAt().toLocalDate()));
+
+        List<DailySales> result = new ArrayList<>();
+        for (LocalDate day = from; !day.isAfter(today); day = day.plusDays(1)) {
+            List<Sale> sales = byDay.getOrDefault(day, List.of());
+            BigDecimal revenue = sales.stream()
+                    .map(Sale::getTotal)
+                    .filter(Objects::nonNull)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            long units = sales.stream().mapToLong(sale -> sale.getQuantity() == null ? 0 : sale.getQuantity()).sum();
+            result.add(new DailySales(day, sales.size(), units, revenue));
+        }
+        return result;
+    }
+
     public List<SaleSummary> summary() {
         return saleRepository.summarizeByProduct();
     }
@@ -58,7 +90,7 @@ public class SaleService {
 
     public ReceiptResponse getReceiptBySaleId(Long saleId) {
         Sale sale = saleRepository.findById(saleId)
-                .orElseThrow(() -> new RuntimeException("Venta no encontrada con ID: " + saleId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Venta no encontrada"));
 
         // Formato correlativo tipo boleta: B001-000001
         String receiptNumber = String.format("B001-%06d", sale.getId());

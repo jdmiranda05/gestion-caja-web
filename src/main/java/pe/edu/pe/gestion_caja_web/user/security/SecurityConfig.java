@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,9 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
-import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.config.http.SessionCreationPolicy;
+
+import pe.edu.pe.gestion_caja_web.common.JsonSecurityHandlers;
 
 /**
  * Configura las reglas de acceso, la autenticación y la protección de la aplicación.
@@ -49,29 +48,21 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authorize -> authorize
-                // Páginas y archivos estáticos de la tienda y de las cuentas.
-                .requestMatchers(
-                    "/", "/index.html",
-                    "/login", "/login.html",
-                    "/registro", "/registro.html",
-                    "/css/**", "/js/**",
-                    "/favicon.ico"
-                ).permitAll()
-
                 // Catálogo público y búsqueda con JPQL.
                 .requestMatchers(HttpMethod.GET, "/api/products").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/products/search").permitAll()
 
-                // Preparación de CSRF, registro e inicio de sesión.
-                .requestMatchers(HttpMethod.GET, "/api/users/csrf").permitAll()
+                // Registro e inicio de sesión (emite el JWT).
                 .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/users/login").permitAll()
 
-                // Consola H2 durante el desarrollo.
+                // Consola H2 y salud de la aplicación durante el desarrollo.
                 .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers("/actuator/health").permitAll()
 
                 // Gestión de productos: solo gerente y administrador.
-                .requestMatchers(HttpMethod.GET, "/api/products/inactive", "/api/products/low-stock")
+                .requestMatchers(HttpMethod.GET, "/api/products/inactive", "/api/products/low-stock",
+                        "/api/products/*")
                     .hasAnyRole("MANAGER", "ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/products")
                     .hasAnyRole("MANAGER", "ADMIN")
@@ -117,40 +108,28 @@ public class SecurityConfig {
                 .requestMatchers("/api/purchases/**")
                     .hasRole("CUSTOMER")
 
-                // El resto de las rutas exige autenticación.
-                .anyRequest().authenticated()
+                // Toda otra ruta de la API exige un JWT válido.
+                .requestMatchers("/api/**", "/actuator/**").authenticated()
+
+                // El resto son los archivos de la SPA Angular (index.html, JS, CSS);
+                // las rutas del cliente se protegen con guards y los datos con la API.
+                .anyRequest().permitAll()
             )
-            // Usa la página de acceso propia de la tienda.
-            .formLogin(form -> form
-                .loginPage("/login")
-                .defaultSuccessUrl("/", true)
-                .failureUrl("/login?error")
-                .permitAll()
-            )
-            // Cierra la sesión y vuelve al formulario de acceso.
-            .logout(logout -> logout
-                .logoutSuccessUrl("/login?logout")
-                .permitAll()
-            )
-            // Mantiene CSRF activo, salvo en la consola H2 y en el inicio de sesión con JWT.
-            .csrf(csrf -> csrf
-                .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
-                .ignoringRequestMatchers("/h2-console/**")
-                .ignoringRequestMatchers(
-                    PathPatternRequestMatcher.withDefaults()
-                        .matcher(HttpMethod.POST, "/api/users/login")
-                )
-            )
+            // API sin estado: cada solicitud se autentica solo con el JWT.
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            // El token viaja en la cabecera Authorization, no en cookies, por lo que
+            // la API no es vulnerable a CSRF. Se mantiene CSRF fuera de /api y H2.
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/h2-console/**"))
             // Acepta tokens JWT en la cabecera Authorization: Bearer.
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                .authenticationEntryPoint(JsonSecurityHandlers.unauthorized())
+                .accessDeniedHandler(JsonSecurityHandlers.forbidden())
             )
-            // Devuelve HTTP 401 a las solicitudes de la API sin autenticar.
+            // 401 y 403 en JSON para que el frontend muestre mensajes claros.
             .exceptionHandling(exceptions -> exceptions
-                .defaultAuthenticationEntryPointFor(
-                    new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
-                    PathPatternRequestMatcher.withDefaults().matcher("/api/**")
-                )
+                .authenticationEntryPoint(JsonSecurityHandlers.unauthorized())
+                .accessDeniedHandler(JsonSecurityHandlers.forbidden())
             )
             // Permite mostrar la consola H2 dentro de un marco del mismo origen.
             .headers(headers -> headers

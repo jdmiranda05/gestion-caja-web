@@ -1,5 +1,6 @@
 package pe.edu.pe.gestion_caja_web.claim.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -41,7 +42,7 @@ public class ClaimController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ClaimResponse createClaim(
-            @RequestBody ClaimRequest request,
+            @Valid @RequestBody ClaimRequest request,
             Authentication authentication) {
         return claimService.createClaim(authentication.getName(), request);
     }
@@ -79,7 +80,7 @@ public StaffClaimResponse startReview(
 @PostMapping("/staff/{claimId}/resolve")
 public StaffClaimResponse resolveClaim(
         @org.springframework.web.bind.annotation.PathVariable Long claimId,
-        @RequestBody ClaimResolutionRequest request,
+        @Valid @RequestBody ClaimResolutionRequest request,
         Authentication authentication) {
 
     return claimService.resolveClaim(

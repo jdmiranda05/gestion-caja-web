@@ -1,5 +1,6 @@
 package pe.edu.pe.gestion_caja_web.user.admin.controller;
 
+import jakarta.validation.Valid;
 import java.security.Principal;
 
 import org.springframework.http.HttpStatus;
@@ -24,14 +25,17 @@ public class AdminUserController {
     }
 
     public record DeactivationRequestBody(
+            @jakarta.validation.constraints.NotNull(message = "Selecciona el usuario.")
             Long targetUserId,
+            @jakarta.validation.constraints.NotBlank(message = "Indica el motivo de la desactivacion.")
+            @jakarta.validation.constraints.Size(max = 255, message = "El motivo admite como maximo 255 caracteres.")
             String reason
     ) {}
 
     @PostMapping("/deactivation-requests")
     public ResponseEntity<UserDeactivationRequest> requestDeactivation(
             Principal principal,
-            @RequestBody DeactivationRequestBody body) {
+            @Valid @RequestBody DeactivationRequestBody body) {
 
         UserDeactivationRequest request =
                 adminUserService.requestDeactivation(

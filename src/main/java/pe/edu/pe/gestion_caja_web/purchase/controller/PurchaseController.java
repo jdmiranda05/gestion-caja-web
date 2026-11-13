@@ -1,5 +1,6 @@
 package pe.edu.pe.gestion_caja_web.purchase.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -37,7 +38,7 @@ public class PurchaseController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public PurchaseResponse placeOrder(
-            @RequestBody PurchaseRequest request,
+            @Valid @RequestBody PurchaseRequest request,
             Authentication authentication) {
         return purchaseService.placeOrder(authentication.getName(), request);
     }

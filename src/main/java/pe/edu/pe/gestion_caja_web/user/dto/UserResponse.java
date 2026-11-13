@@ -12,15 +12,24 @@ public class UserResponse {
     private final String username;
     private final String email;
     private final Role role;
+    private final boolean active;
 
     /**
      * Construye una respuesta sin exponer la contraseña del usuario.
      */
     public UserResponse(Long id, String username, String email, Role role) {
+        this(id, username, email, role, true);
+    }
+
+    /**
+     * Construye una respuesta incluyendo el estado de la cuenta.
+     */
+    public UserResponse(Long id, String username, String email, Role role, boolean active) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.role = role;
+        this.active = active;
     }
 
     /**
@@ -52,6 +61,13 @@ public class UserResponse {
     }
 
     /**
+     * Indica si la cuenta está activa.
+     */
+    public boolean isActive() {
+        return active;
+    }
+
+    /**
      * Convierte una entidad de usuario en una respuesta pública.
      */
     public static UserResponse from(User user) {
@@ -59,7 +75,8 @@ public class UserResponse {
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getRole()
+                user.getRole(),
+                user.isActive()
         );
     }
 }

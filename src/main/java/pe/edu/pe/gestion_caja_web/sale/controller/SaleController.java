@@ -1,5 +1,6 @@
 package pe.edu.pe.gestion_caja_web.sale.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -9,9 +10,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import pe.edu.pe.gestion_caja_web.sale.dto.DailySales;
 import pe.edu.pe.gestion_caja_web.sale.dto.ReceiptResponse;
 import pe.edu.pe.gestion_caja_web.sale.dto.SaleRequest;
 import pe.edu.pe.gestion_caja_web.sale.dto.SaleSummary;
@@ -38,9 +41,17 @@ public class SaleController {
         return saleService.summary();
     }
 
+    /**
+     * Serie diaria de ventas para el grafico del panel (por defecto 14 dias).
+     */
+    @GetMapping("/daily")
+    public List<DailySales> daily(@RequestParam(defaultValue = "14") int days) {
+        return saleService.daily(days);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Sale register(@RequestBody SaleRequest request) {
+    public Sale register(@Valid @RequestBody SaleRequest request) {
         return saleService.register(request);
     }
 

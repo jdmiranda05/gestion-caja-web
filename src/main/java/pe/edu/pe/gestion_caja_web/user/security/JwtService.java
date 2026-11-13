@@ -60,6 +60,13 @@ public class JwtService {
     /**
      * Genera un JWT para el usuario autenticado.
      */
+    /**
+     * Calcula el instante en que expira un token emitido ahora.
+     */
+    public Instant expirationFromNow() {
+        return Instant.now().plus(expiration);
+    }
+
     public String generateToken(String username, Role role) {
         Instant now = Instant.now();
 
