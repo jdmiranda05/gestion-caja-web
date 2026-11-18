@@ -158,7 +158,7 @@ type Tab = 'activos' | 'retirados';
     .danger:hover { color: var(--danger); background: var(--danger-soft); }
     tr.flash td { animation: flash 1.6s var(--ease); }
     @keyframes flash { 0%, 40% { background: var(--brand-softer); } 100% { background: transparent; } }
-    @media (max-width: 640px) { .cat { flex: 1; min-width: 0; } }
+    @media (max-width: 640px) { .cat { flex: 1 1 160px; min-width: 0; } }
   `,
 })
 export class ProductsPage implements OnInit {
