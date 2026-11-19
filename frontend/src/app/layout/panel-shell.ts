@@ -55,10 +55,6 @@ interface NavItem {
               <app-status [value]="auth.role() ?? ''" />
             </div>
           </div>
-          <div class="session" title="Token JWT en memoria de sesión (enmascarado)">
-            <app-icon name="key" [size]="13" />
-            <span class="mono">{{ auth.maskedToken() }}</span>
-          </div>
           <div class="session"><app-icon name="clock" [size]="13" /><span>Sesión hasta las {{ expires() }}</span></div>
           <div class="foot-actions">
             <app-theme-toggle />

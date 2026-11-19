@@ -48,13 +48,6 @@ export class AuthService {
     return current.token;
   }
 
-  /** Versión enmascarada para la demostración (no expone el token completo). */
-  maskedToken(): string {
-    const token = this.session()?.token;
-    if (!token) return '—';
-    return `${token.slice(0, 12)}…${token.slice(-6)}`;
-  }
-
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>('/api/users/login', credentials).pipe(
       tap((response) => {
